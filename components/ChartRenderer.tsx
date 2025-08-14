@@ -96,7 +96,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yField} fill="#8884d8" />
+            <Bar dataKey={yField || 'value'} fill="#8884d8" />
           </BarChart>
         )
 
@@ -108,7 +108,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey={yField} stroke="#8884d8" strokeWidth={2} />
+            <Line type="monotone" dataKey={yField || 'value'} stroke="#8884d8" strokeWidth={2} />
           </LineChart>
         )
 
@@ -120,7 +120,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Scatter dataKey={yField} fill="#8884d8" />
+            <Scatter dataKey={yField || 'value'} fill="#8884d8" />
           </ScatterChart>
         )
 
@@ -176,7 +176,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Area type="monotone" dataKey={yField} stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
+            <Area type="monotone" dataKey={yField || 'value'} stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
           </AreaChart>
         )
 
@@ -213,7 +213,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yField} fill="#8884d8" />
+            <Bar dataKey={yField || 'value'} fill="#8884d8" />
           </BarChart>
         )
 
@@ -225,7 +225,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yField} fill="#8884d8" />
+            <Bar dataKey={yField || 'value'} fill="#8884d8" />
           </BarChart>
         )
 
@@ -233,7 +233,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
         return (
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600">{chartData[0]?.[yField] || 0}</div>
+              <div className="text-4xl font-bold text-blue-600">{chartData[0]?.[yField || 'value'] || 0}</div>
               <div className="text-sm text-gray-500">{xField}</div>
             </div>
           </div>
@@ -247,7 +247,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Scatter dataKey={yField} fill="#8884d8" />
+            <Scatter dataKey={yField || 'value'} fill="#8884d8" />
           </ScatterChart>
         )
 
@@ -259,7 +259,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yField} fill="#8884d8" stackId="stack" />
+            <Bar dataKey={yField || 'value'} fill="#8884d8" stackId="stack" />
           </BarChart>
         )
 
@@ -271,7 +271,7 @@ export function ChartRenderer({ chartSpec, dataProfile }: ChartRendererProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yField} fill="#8884d8" />
+            <Bar dataKey={yField || 'value'} fill="#8884d8" />
           </BarChart>
         )
 

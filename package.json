@@ -7,6 +7,9 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
+
+    "build:static": "npm run build",
+    "serve:out": "npx http-server ./out -p 4173 -c-1",
     "lint": "next lint",
     "test": "jest",
     "test:e2e": "playwright test"

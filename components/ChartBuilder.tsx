@@ -831,6 +831,10 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
                       chartSpec={{
                         id: 'preview',
                         title: chartTitle,
+                        data: {
+                          sourceId: dataProfile.id,
+                          transform: []
+                        },
                         mark: selectedChartType as ChartMark,
                         encoding: {
                           x: { field: xField, type: 'nominal' },
