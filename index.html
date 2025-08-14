@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Visualization Playground</title>
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js & time adapter -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <!-- PapaParse for CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    html, body { height: 100%; }
+    ::-webkit-scrollbar { height: 10px; width: 10px; }
+    ::-webkit-scrollbar-thumb { background: #a5b4fc; border-radius: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</head>
+<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/70 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 shadow ring-1 ring-black/5"></div>
+      <h1 class="text-xl font-semibold tracking-tight">Data Visualization Playground</h1>
+      <div class="ml-auto flex items-center gap-2">
+        <button id="themeBtn" class="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800">Toggle theme</button>
+        <a href="#" id="savePngBtn" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Save chart as PNG</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- LEFT: Controls -->
+    <section class="lg:col-span-4 space-y-6">
+      <!-- Data card -->
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+          <h2 class="font-semibold">1) Load data (CSV)</h2>
+          <button id="loadSampleBtn" class="text-xs px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">Load sample</button>
+        </div>
+        <div class="p-4 space-y-3">
+          <input id="csvFile" type="file" accept=".csv,text/csv" class="block w-full text-sm file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
+          <div class="text-xs text-zinc-500">Tip: First rows preview will appear below after upload.</div>
+          <div id="preview" class="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-auto max-h-48 hidden"></div>
+        </div>
+      </div>
+
+      <!-- Chart settings card -->
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+          <h2 class="font-semibold">2) Chart settings</h2>
+          <button id="randomPaletteBtn" class="text-xs px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">Random palette</button>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-3 text-sm">
+          <label class="col-span-2">Chart type
+            <select id="chartType" class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2">
+              <option value="line">Line</option>
+              <option value="bar">Bar</option>
+              <option value="scatter">Scatter</option>
+              <option value="bubble">Bubble</option>
+              <option value="pie">Pie</option>
+              <option value="doughnut">Doughnut</option>
+              <option value="radar">Radar</option>
+              <option value="polarArea">Polar Area</option>
+            </select>
+          </label>
+
+          <label class="col-span-2">X axis column
+            <select id="xColumn" class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2"></select>
+          </label>
+
+          <label class="col-span-2">Y series columns
+            <select id="yColumns" multiple size="6" class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2"></select>
+          </label>
+
+          <label>Aggregate
+            <select id="aggregate" class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2">
+              <option value="none">none</option>
+              <option value="sum">sum</option>
+              <option value="mean">mean</option>
+              <option value="count">count</option>
+              <option value="min">min</option>
+              <option value="max">max</option>
+            </select>
+          </label>
+          <label>Parse X as time
+            <input id="xIsTime" type="checkbox" class="ml-2 align-middle">
+          </label>
+
+          <div class="col-span-2" id="colorPickers"></div>
+
+          <button id="renderBtn" class="col-span-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium">Render chart</button>
+        </div>
+      </div>
+
+      <!-- AI Analyst card -->
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <div class="p-4 border-b border-zinc-200 dark:border-zinc-800">
+          <h2 class="font-semibold">3) AI Analyst (DeepSeek)</h2>
+          <p class="text-xs text-zinc-500 mt-1">Enter your DeepSeek API key (stored only in your browser if you choose) and describe the chart you want. The AI will choose columns, chart type, and colors.</p>
+        </div>
+        <div class="p-4 space-y-3 text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <label class="col-span-2">DeepSeek API key
+              <input id="deepseekKey" type="password" value="sk-09ee0e2559ef4beda180ebdc00b4c63b" placeholder="sk-..." class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2"/>
+            </label>
+            <label class="col-span-2 inline-flex items-center gap-2 text-xs"><input type="checkbox" id="rememberKey"/> Remember key in this browser</label>
+          </div>
+          <label>Instruction (what to plot?)
+            <textarea id="aiPrompt" rows="3" placeholder="e.g., Compare monthly revenue by region as a stacked bar; filter to 2024 only" class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2"></textarea>
+          </label>
+          <button id="askAI" class="px-3 py-2 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-medium">Ask DeepSeek to build chart</button>
+          <pre id="aiLog" class="text-xs bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 overflow-auto max-h-40 hidden"></pre>
+        </div>
+      </div>
+
+      <!-- Dev tests -->
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <div class="p-4 border-b border-zinc-200 dark:border-zinc-800">
+          <h2 class="font-semibold">Built-in tests</h2>
+          <p class="text-xs text-zinc-500 mt-1">Verify CSS.escape usage & option selection with tricky column names.</p>
+        </div>
+        <div class="p-4 space-y-3 text-sm">
+          <button id="runTests" class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium">Run built-in tests</button>
+          <pre id="testLog" class="text-xs bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 overflow-auto max-h-40 hidden"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Chart canvas -->
+    <section class="lg:col-span-8">
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold">Chart</h2>
+          <div class="text-xs text-zinc-500" id="status">Load a CSV to begin</div>
+        </div>
+        <div class="relative">
+          <canvas id="chart" class="w-full h-[520px]"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-4 pb-10 text-xs text-zinc-500">
+    <p>Tip: Pie/Doughnut/Polar require 1 numeric Y and a categorical X. Scatter requires numeric X and one numeric Y. Bubble requires X, Y, and a third numeric column as size (pick the first selected extra Y as size).</p>
+  </footer>
+
+<script>
+(() => {
+  // ===== Utilities =====
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  const CHART_TYPES = ["line","bar","scatter","bubble","pie","doughnut","radar","polarArea"];
+
+  const nicePalette = () => {
+    const count = 12;
+    const arr = [];
+    for (let i=0;i<count;i++) {
+      const h = Math.round((360/count) * i + Math.random()*10);
+      const s = 70 + Math.round(Math.random()*10);
+      const l = 50 + Math.round(Math.random()*5);
+      arr.push(`hsl(${h} ${s}% ${l}%)`);
+    }
+    return arr;
+  };
+
+  function isNumericLike(val) {
+    if (val === null || val === undefined) return false;
+    if (typeof val === 'number') return Number.isFinite(val);
+    const v = String(val).trim();
+    if (v === '') return false;
+    const n = Number(v.replace(/\s+/g,'').replace(',','.'));
+    return Number.isFinite(n);
+  }
+
+  function coerceNumber(val) {
+    if (typeof val === 'number') return val;
+    const v = String(val).trim();
+    const n = Number(v.replace(/\s+/g,'').replace(',','.'));
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function inferTypes(rows) {
+    if (!rows || !rows.length) return {};
+    const cols = Object.keys(rows[0]);
+    const types = {};
+    for (const c of cols) {
+      let numericCount = 0, nonEmpty = 0;
+      for (const r of rows) {
+        const v = r[c];
+        if (v !== '' && v !== null && v !== undefined) {
+          nonEmpty++;
+          if (isNumericLike(v)) numericCount++;
+        }
+      }
+      types[c] = (numericCount / Math.max(1, nonEmpty)) > 0.7 ? 'numeric' : 'categorical';
+    }
+    return types;
+  }
+
+  // Group & aggregate for category X
+  function aggregateByCategory(rows, xCol, yCols, agg) {
+    const groups = new Map();
+    for (const r of rows) {
+      const key = String(r[xCol]);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(r);
+    }
+    const labels = Array.from(groups.keys());
+    labels.sort();
+    const dataByY = {};
+    for (const y of yCols) {
+      dataByY[y] = labels.map(lbl => {
+        const subset = groups.get(lbl) || [];
+        const nums = subset.map(s => coerceNumber(s[y])).filter(n => Number.isFinite(n));
+        if (nums.length === 0) return null;
+        switch (agg) {
+          case 'sum': return nums.reduce((a,b)=>a+b,0);
+          case 'mean': return nums.reduce((a,b)=>a+b,0) / nums.length;
+          case 'count': return subset.length;
+          case 'min': return Math.min(...nums);
+          case 'max': return Math.max(...nums);
+          default: return nums[0];
+        }
+      });
+    }
+    return { labels, dataByY };
+  }
+
+  // ===== State =====
+  let rawRows = [];
+  let colTypes = {};
+  let chart; // Chart.js instance
+  let colors = nicePalette();
+
+  // ===== Elements =====
+  const fileInput = $('#csvFile');
+  const previewDiv = $('#preview');
+  const chartTypeSel = $('#chartType');
+  const xSel = $('#xColumn');
+  const ySel = $('#yColumns');
+  const aggSel = $('#aggregate');
+  const xIsTime = $('#xIsTime');
+  const colorPickers = $('#colorPickers');
+  const statusEl = $('#status');
+  const savePngBtn = $('#savePngBtn');
+  const randomPaletteBtn = $('#randomPaletteBtn');
+  const themeBtn = $('#themeBtn');
+  const aiPrompt = $('#aiPrompt');
+  const askAI = $('#askAI');
+  const aiLog = $('#aiLog');
+  const deepseekKey = $('#deepseekKey');
+  const rememberKey = $('#rememberKey');
+  const loadSampleBtn = $('#loadSampleBtn');
+  const runTestsBtn = $('#runTests');
+  const testLog = $('#testLog');
+
+  // ===== Theme toggle =====
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+  });
+
+  // ===== Local storage for API key =====
+  const savedKey = localStorage.getItem('deepseek_key');
+  if (savedKey) {
+    deepseekKey.value = savedKey;
+    rememberKey.checked = true;
+  }
+  rememberKey.addEventListener('change', () => {
+    if (rememberKey.checked && deepseekKey.value) {
+      localStorage.setItem('deepseek_key', deepseekKey.value);
+    } else {
+      localStorage.removeItem('deepseek_key');
+    }
+  });
+  deepseekKey.addEventListener('input', () => {
+    if (rememberKey.checked) localStorage.setItem('deepseek_key', deepseekKey.value);
+  });
+
+  // ===== CSV load & preview =====
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (res) => {
+        rawRows = res.data;
+        afterDataLoaded();
+      },
+      error: (err) => {
+        statusEl.textContent = 'CSV parse error: ' + err.message;
+      }
+    });
+  });
+
+  // Sample dataset (Monthly sales by Region)
+  const SAMPLE_CSV = `Month,Region,Revenue,Units,Marketing
+2024-01,EU,12000,320,500
+2024-02,EU,15000,360,800
+2024-03,EU,18000,410,600
+2024-01,US,14000,300,700
+2024-02,US,13000,280,650
+2024-03,US,17000,350,900
+2024-01,APAC,9000,250,400
+2024-02,APAC,11000,270,500
+2024-03,APAC,13000,300,550`;
+
+  loadSampleBtn.addEventListener('click', () => {
+    Papa.parse(SAMPLE_CSV, { header: true, skipEmptyLines: true, complete: (res) => { rawRows = res.data; afterDataLoaded(); } });
+  });
+
+  function afterDataLoaded() {
+    colTypes = inferTypes(rawRows);
+    statusEl.textContent = `Loaded ${rawRows.length} rows.`;
+    // Build preview table
+    buildPreview(rawRows);
+    // Populate selectors
+    const cols = Object.keys(rawRows[0] || {});
+    xSel.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join('');
+    ySel.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join('');
+    // Default suggestions
+    const firstCat = cols.find(c => colTypes[c] === 'categorical') || cols[0];
+    const numericCols = cols.filter(c => colTypes[c] === 'numeric');
+    xSel.value = firstCat || cols[0];
+    // select up to 2 numeric columns by default
+    $$('#yColumns option').forEach(o => { o.selected = false; });
+    numericCols.slice(0,2).forEach(c => { const opt = Array.from(ySel.options).find(o=>o.value===c); if (opt) opt.selected = true; });
+    // Create color pickers for chosen Y
+    rebuildColorPickers();
+  }
+
+  function buildPreview(rows) {
+    if (!rows.length) { previewDiv.classList.add('hidden'); previewDiv.innerHTML = ''; return; }
+    const cols = Object.keys(rows[0]);
+    const limit = Math.min(rows.length, 10);
+    let html = '<table class="min-w-full text-xs"><thead><tr>' + cols.map(c => `<th class="text-left font-semibold p-2 sticky top-0 bg-zinc-50 dark:bg-zinc-900">${c}</th>`).join('') + '</tr></thead><tbody>';
+    for (let i=0;i<limit;i++) {
+      const r = rows[i];
+      html += '<tr class="border-t border-zinc-200 dark:border-zinc-800">' + cols.map(c => `<td class="p-2 whitespace-nowrap">${String(r[c] ?? '')}</td>`).join('') + '</tr>';
+    }
+    html += '</tbody></table>';
+    previewDiv.innerHTML = html;
+    previewDiv.classList.remove('hidden');
+  }
+
+  // ===== Dynamic color pickers =====
+  function rebuildColorPickers() {
+    const selected = Array.from(ySel.selectedOptions).map(o=>o.value);
+    colorPickers.innerHTML = '';
+    selected.forEach((col, idx) => {
+      const color = colors[idx % colors.length];
+      const id = `color_${idx}`;
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2 mb-2';
+      row.innerHTML = `<input type="color" id="${id}" value="${toHex(color)}" class="h-8 w-10 rounded"/>`+
+                      `<label for="${id}" class="text-sm">${col}</label>`;
+      colorPickers.appendChild(row);
+    });
+  }
+
+  ySel.addEventListener('change', rebuildColorPickers);
+
+  randomPaletteBtn.addEventListener('click', () => {
+    colors = nicePalette();
+    rebuildColorPickers();
+  });
+
+  function toHex(cssColor) {
+    if (/^#/.test(cssColor)) return cssColor;
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = cssColor;
+    const computed = ctx.fillStyle; // browser converts to rgb(a)
+    const m = computed.match(/rgb\s*\(\s*(\d+)\D+(\d+)\D+(\d+)/i);
+    if (!m) return '#777777';
+    const r = Number(m[1]).toString(16).padStart(2,'0');
+    const g = Number(m[2]).toString(16).padStart(2,'0');
+    const b = Number(m[3]).toString(16).padStart(2,'0');
+    return `#${r}${g}${b}`;
+  }
+
+  // ===== Render chart =====
+  $('#renderBtn').addEventListener('click', renderChart);
+
+  function renderChart(fromAIConfig) {
+    if (!rawRows.length) { statusEl.textContent = 'Please load a CSV first.'; return; }
+    const type = chartTypeSel.value;
+    const xCol = xSel.value;
+    const yCols = Array.from(ySel.selectedOptions).map(o=>o.value);
+    const agg = aggSel.value;
+
+    if (['pie','doughnut','polarArea'].includes(type)) {
+      if (yCols.length !== 1) { statusEl.textContent = 'For Pie/Doughnut/Polar select exactly 1 Y column.'; return; }
+      const { labels, dataByY } = aggregateByCategory(rawRows, xCol, yCols, agg==='none' ? 'sum' : agg);
+      const vals = dataByY[yCols[0]].map(v => coerceNumber(v));
+      const palette = Array.from({length: vals.length}, (_,i)=> toHex(colors[i % colors.length]));
+      const dataset = {
+        label: yCols[0],
+        data: vals,
+        backgroundColor: palette,
+        borderColor: palette,
+      };
+      drawChart(type, labels, [dataset], xIsTime.checked);
+      statusEl.textContent = fromAIConfig ? 'Chart built by AI!' : 'Chart rendered.';
+      return;
+    }
+
+    if (type === 'scatter' || type === 'bubble') {
+      if (yCols.length < 1) { statusEl.textContent = 'Select at least one Y column.'; return; }
+      const xIsNum = colTypes[xCol] === 'numeric' || xIsTime.checked;
+      if (!xIsNum) { statusEl.textContent = 'Scatter/Bubble require numeric (or time) X.'; return; }
+      const datasets = [];
+      const baseColorHexes = selectedColors();
+      const sizeCol = (type === 'bubble' && yCols[1]) ? yCols[1] : null;
+      const yColsForSeries = [yCols[0]]; // first Y is used for Y, second (optional) as size
+      for (let i=0;i<yColsForSeries.length;i++) {
+        const y = yColsForSeries[i];
+        const hex = baseColorHexes[i % baseColorHexes.length];
+        const points = rawRows.map(r => {
+          const xVal = xIsTime.checked ? new Date(r[xCol]) : coerceNumber(r[xCol]);
+          const yVal = coerceNumber(r[y]);
+          const sVal = sizeCol ? Math.max(4, Math.sqrt(Math.abs(coerceNumber(r[sizeCol])))) : 6;
+          return (Number.isFinite(yVal) && (xIsTime.checked || Number.isFinite(xVal))) ? { x: xVal, y: yVal, r: sVal } : null;
+        }).filter(Boolean);
+        datasets.push({ label: y, data: points, backgroundColor: hex, borderColor: hex, pointRadius: type === 'bubble' ? undefined : 3 });
+      }
+      drawChart('scatter', [], datasets, xIsTime.checked);
+      statusEl.textContent = fromAIConfig ? 'Chart built by AI!' : 'Chart rendered.';
+      return;
+    }
+
+    // line / bar / radar / polarArea (category-based for radar/polarArea will treat labels as categories)
+    const { labels, dataByY } = aggregateByCategory(rawRows, xCol, yCols, agg);
+    const hexes = selectedColors();
+    const datasets = yCols.map((y, i) => ({
+      label: y,
+      data: dataByY[y].map(v => coerceNumber(v)),
+      backgroundColor: hexes[i % hexes.length] + (type==='bar' ? '' : '30'),
+      borderColor: hexes[i % hexes.length],
+      fill: type === 'line',
+      tension: 0.25
+    }));
+    drawChart(type, labels, datasets, xIsTime.checked);
+    statusEl.textContent = fromAIConfig ? 'Chart built by AI!' : 'Chart rendered.';
+  }
+
+  function selectedColors() {
+    const picks = Array.from(colorPickers.querySelectorAll('input[type=color]'))
+      .map(i => i.value || '#888888');
+    return picks.length ? picks : ['#4f46e5','#06b6d4','#10b981','#f59e0b','#ef4444'];
+  }
+
+  function drawChart(type, labels, datasets, xTime) {
+    const ctx = $('#chart').getContext('2d');
+    chart && chart.destroy();
+    const common = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { enabled: true },
+        title: { display: false }
+      },
+      scales: {}
+    };
+    if (xTime) {
+      common.scales.x = { type: 'time', time: { unit: 'auto' }, ticks: { autoSkip: true } };
+    }
+    if (['pie','doughnut','polarArea','radar'].includes(type)) {
+      // no y scale needed
+    } else {
+      common.scales.y = { beginAtZero: true };
+    }
+    const data = { labels, datasets };
+    chart = new Chart(ctx, { type: (type==='polarArea'||type==='radar') ? type : (type==='scatter'?'scatter':type), data, options: common });
+  }
+
+  // Save as PNG
+  savePngBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!chart) return;
+    const url = chart.toBase64Image();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chart-${Date.now()}.png`;
+    a.click();
+  });
+
+  // ===== DeepSeek AI integration =====
+  askAI.addEventListener('click', async () => {
+    if (!rawRows.length) { statusEl.textContent = 'Load a CSV first.'; return; }
+    const key = deepseekKey.value.trim();
+    if (!key) { statusEl.textContent = 'Enter your DeepSeek API key.'; deepseekKey.focus(); return; }
+
+    // Prepare compact data preview for the model (limit rows to 50)
+    const headers = Object.keys(rawRows[0] || {});
+    const sampleRows = rawRows.slice(0, 50);
+
+    const system = `You are a data visualization planner. Given CSV headers and sample rows, output a STRICT JSON plan for a Chart.js chart.
+Schema:
+{
+  "chartType": "line|bar|scatter|pie|doughnut|radar|polarArea|bubble",
+  "x": "column name",
+  "y": ["one or more column names"],
+  "size": "optional size column for bubble",
+  "aggregate": "none|sum|mean|count|min|max",
+  "filters": [{"column":"Col","op":"==|!=|>|>=|<|<=|in","value":"X"}],
+  "parseXAsTime": true|false,
+  "colors": {"SeriesName":"#RRGGBB", ...},
+  "notes": "short note"
+}
+Rules: pick valid column names; prefer numeric columns for Y; for pie/doughnut/polar require exactly one numeric Y and a categorical X; for scatter require numeric (or date) X and one numeric Y; for bubble add a numeric size. If the user asks for filters or time parsing, reflect that.`;
+
+    const user = `User instruction: ${aiPrompt.value || 'Choose a sensible chart to summarize the dataset.'}
+CSV headers: ${JSON.stringify(headers)}
+Column types: ${JSON.stringify(colTypes)}
+Sample rows (JSON):
+${JSON.stringify(sampleRows, null, 0)}`;
+
+    aiLog.classList.remove('hidden');
+    aiLog.textContent = 'Thinking...';
+
+    try {
+      const resp = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + key
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: user }
+          ],
+          temperature: 0.2,
+          stream: false
+        })
+      });
+      if (!resp.ok) {
+        const t = await resp.text();
+        throw new Error('API error ' + resp.status + ': ' + t);
+      }
+      const data = await resp.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      const json = extractJSON(content);
+      console.log('AI Response:', content);
+      console.log('Extracted JSON:', json);
+      aiLog.textContent = 'AI is building your chart...';
+      applyAIPlan(json);
+    } catch (err) {
+      console.error(err);
+      aiLog.textContent = 'Error: ' + err.message + '\n(Ensure your API key is valid and has access.)';
+    }
+  });
+
+  function extractJSON(text) {
+    console.log('Extracting JSON from:', text);
+    
+    // Try to find JSON in code blocks first
+    const fence = text.match(/```(?:json)?\n([\s\S]*?)```/i);
+    if (fence) {
+      try {
+        const parsed = JSON.parse(fence[1]);
+        console.log('Found JSON in code block:', parsed);
+        return parsed;
+      } catch (e) {
+        console.log('Failed to parse JSON from code block:', e);
+      }
+    }
+    
+    // Try to find JSON in the text
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      try {
+        const jsonStr = text.slice(start, end + 1);
+        const parsed = JSON.parse(jsonStr);
+        console.log('Found JSON in text:', parsed);
+        return parsed;
+      } catch (e) {
+        console.log('Failed to parse JSON from text:', e);
+      }
+    }
+    
+    console.log('No valid JSON found, using default');
+    return { chartType: 'line', x: Object.keys(rawRows[0]||{})[0], y: [], aggregate: 'none', parseXAsTime: false };
+  }
+
+  function cssEsc(s) {
+    console.log('Escaping:', s);
+    if (window.CSS && typeof CSS.escape === 'function') {
+      const escaped = CSS.escape(String(s));
+      console.log('CSS.escape result:', escaped);
+      return escaped;
+    }
+    // minimal safe fallback for attribute value matching
+    const escaped = String(s).replace(/["\\]/g, '\\$&');
+    console.log('Fallback escape result:', escaped);
+    return escaped;
+  }
+
+  function applyAIPlan(plan) {
+    console.log('Applying AI plan:', plan);
+    const availableColumns = Object.keys(rawRows[0] || {});
+    console.log('Available columns:', availableColumns);
+    console.log('Sample data row:', rawRows[0]);
+    
+    // Set UI based on AI plan
+    if (plan.chartType && CHART_TYPES.includes(plan.chartType)) {
+      chartTypeSel.value = plan.chartType;
+      console.log('Set chart type to:', plan.chartType);
+    }
+    
+    if (plan.x) {
+      const opt = xSel.querySelector(`option[value="${cssEsc(plan.x)}"]`);
+      if (opt) {
+        xSel.value = plan.x;
+        console.log('Set X column to:', plan.x);
+      } else {
+        console.log('X column not found:', plan.x);
+      }
+    }
+
+    // Select Y columns
+    const desiredY = Array.isArray(plan.y) ? plan.y : (plan.y ? [plan.y] : []);
+    console.log('Desired Y columns:', desiredY);
+    $$('#yColumns option').forEach(o => o.selected = false);
+    
+    let foundYColumns = [];
+    desiredY.forEach(col => {
+      const opt = Array.from(ySel.options).find(o => o.value === col);
+      if (opt) {
+        opt.selected = true;
+        foundYColumns.push(col);
+        console.log('Selected Y column:', col);
+      } else {
+        console.log('Y column not found:', col);
+      }
+    });
+    
+    // If no Y columns were found, select the first numeric column
+    if (foundYColumns.length === 0) {
+      const numericCols = availableColumns.filter(c => colTypes[c] === 'numeric');
+      if (numericCols.length > 0) {
+        const firstNumeric = numericCols[0];
+        const opt = Array.from(ySel.options).find(o => o.value === firstNumeric);
+        if (opt) {
+          opt.selected = true;
+          console.log('Auto-selected numeric Y column:', firstNumeric);
+        }
+      }
+    }
+    rebuildColorPickers();
+
+    // Aggregate
+    if (plan.aggregate) aggSel.value = plan.aggregate;
+    // Time parsing
+    xIsTime.checked = Boolean(plan.parseXAsTime);
+
+    // Colors
+    if (plan.colors) {
+      const entries = Object.entries(plan.colors);
+      const inputs = colorPickers.querySelectorAll('input[type=color]');
+      entries.forEach(([series, hex], idx) => {
+        const input = inputs[idx];
+        if (input && /^#([0-9a-f]{6})$/i.test(hex)) input.value = hex;
+      });
+    }
+
+    // Filters (optional)
+    if (Array.isArray(plan.filters) && plan.filters.length) {
+      rawRows = filterRows(rawRows, plan.filters);
+      statusEl.textContent = `Applied ${plan.filters.length} filter(s).`;
+    }
+
+    console.log('About to render chart...');
+    renderChart(true);
+  }
+
+  function filterRows(rows, filters) {
+    const ops = {
+      '==': (a,b) => a == b,
+      '!=': (a,b) => a != b,
+      '>': (a,b) => coerceNumber(a) > coerceNumber(b),
+      '>=': (a,b) => coerceNumber(a) >= coerceNumber(b),
+      '<': (a,b) => coerceNumber(a) < coerceNumber(b),
+      '<=': (a,b) => coerceNumber(a) <= coerceNumber(b),
+      'in': (a,b) => Array.isArray(b) ? b.includes(a) : String(a) === String(b)
+    };
+    return rows.filter(r => filters.every(f => {
+      const fn = ops[f.op];
+      if (!fn) return true;
+      return fn(r[f.column], f.value);
+    }));
+  }
+
+  // ===== Built-in tests =====
+  runTestsBtn.addEventListener('click', () => {
+    const out = [];
+    function pass(msg){ out.push('PASS  ' + msg); }
+    function fail(msg){ out.push('FAIL  ' + msg); }
+
+    // Prepare fake options with tricky names
+    const tricky = ['Total Sales ($)', 'foo#bar.baz', ' spaced name ', 'plain'];
+    const old = xSel.innerHTML;
+    xSel.innerHTML = tricky.map(v=>`<option value="${cssEsc(v)}">${v}</option>`).join('');
+    try {
+      // Test CSS.escape presence or fallback
+      try {
+        const escTry = cssEsc('foo#bar.baz');
+        if (typeof escTry === 'string' && escTry.length) pass('cssEsc returns string');
+        else fail('cssEsc returns invalid value');
+      } catch(e){ fail('cssEsc threw ' + e.message); }
+
+      // Simulate AI plan that selects each tricky option
+      let allOK = true;
+      for (const val of tricky) {
+        const opt = xSel.querySelector(`option[value="${cssEsc(val)}"]`);
+        if (!opt) { allOK = false; out.push('MISS  querySelector failed for "'+val+'"'); }
+      }
+      if (allOK) pass('querySelector + cssEsc finds all tricky options');
+
+      // Restore
+      pass('No exceptions during tests');
+    } finally {
+      xSel.innerHTML = old;
+    }
+
+    testLog.classList.remove('hidden');
+    testLog.textContent = out.join('\n');
+  });
+
+  // First render: empty chart placeholder
+  drawChart('bar', ['Upload CSV'], [{ label: 'Waiting...', data: [0], backgroundColor: '#e5e7eb', borderColor: '#9ca3af' }], false);
+})();
+</script>
+</body>
+</html>
