@@ -559,6 +559,9 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-white">X Axis</label>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                💡 Виберіть категоріальне поле або дату для групування даних
+              </div>
               <select
                 value={xField}
                 onChange={(e) => setXField(e.target.value)}
@@ -575,6 +578,9 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
             
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-white">Y Axis</label>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                💡 Виберіть числове поле для відображення значень (суми, кількості, середні значення)
+              </div>
               <select
                 value={yField}
                 onChange={(e) => setYField(e.target.value)}
@@ -853,7 +859,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
                         createdAt: new Date(),
                         updatedAt: new Date()
                       }}
-                      dataProfile={dataProfile}
+                      data={dataProfile.sampleData || []}
                     />
                   </div>
                 ) : (

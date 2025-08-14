@@ -229,8 +229,8 @@ export function Dashboard({
       {/* Dashboard Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             {charts.length} charts • {charts.length > 0 
               ? `Last updated ${new Date(Math.max(...charts.map(chart => chart.updatedAt.getTime()))).toLocaleDateString()}`
               : 'No charts yet'
@@ -391,7 +391,7 @@ export function Dashboard({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {getChartIcon(chart.mark)}
-                    <CardTitle className="text-lg">{chart.title}</CardTitle>
+                    <CardTitle className="text-lg text-gray-900 dark:text-white font-bold">{chart.title}</CardTitle>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button
@@ -459,10 +459,10 @@ export function Dashboard({
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center">
                       <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-500">Chart Preview</p>
-                      <p className="text-xs text-gray-400">
-                        {chart.mark} chart
-                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Chart Preview</p>
+                                              <p className="text-xs text-gray-400 dark:text-gray-500">
+                          {chart.mark} chart
+                        </p>
                     </div>
                   </div>
                 </div>
@@ -502,10 +502,10 @@ export function Dashboard({
                     </div>
                     
                     <div>
-                      <h3 className="font-medium">{chart.title}</h3>
-                      <p className="text-sm text-gray-600">
-                        {chart.mark} chart • Created {chart.createdAt.toLocaleDateString()}
-                      </p>
+                      <h3 className="font-bold text-gray-900 dark:text-white">{chart.title}</h3>
+                                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {chart.mark} chart • Created {chart.createdAt.toLocaleDateString()}
+                        </p>
                     </div>
                   </div>
                   
@@ -579,10 +579,10 @@ export function Dashboard({
           <CardContent className="py-12">
             <div className="text-center">
               <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 No charts yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Завантажте дані та створіть свій перший чарт на головній сторінці
               </p>
               <Button onClick={() => window.location.href = '/'}>
@@ -600,8 +600,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Charts</p>
-                <p className="text-2xl font-bold">{charts.length}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Charts</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{charts.length}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-blue-500" />
             </div>
@@ -612,8 +612,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Chart Types</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Chart Types</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {Array.from(new Set(charts.map(chart => chart.mark))).length}
                 </p>
               </div>
@@ -626,8 +626,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Data Sources</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Data Sources</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {Array.from(new Set(charts.map(chart => chart.data.sourceId))).length}
                 </p>
               </div>
@@ -640,8 +640,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Last Created</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Last Created</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {charts.length > 0 
                     ? new Date(Math.max(...charts.map(chart => chart.createdAt.getTime()))).toLocaleDateString()
                     : 'None'

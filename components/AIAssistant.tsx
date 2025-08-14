@@ -36,18 +36,18 @@ interface Message {
 }
 
 const QUICK_PROMPTS = [
-  "Який тип чарту використати?",
-  "Покажи тренди",
-  "Знайди кореляції",
-  "Порівняй категорії",
-  "Що показують дані?"
+  "Який чарт краще? 📊",
+  "Покажи тренди 📈",
+  "Знайди кореляції 🔍",
+  "Порівняй категорії 📋",
+  "Що показують дані? 🤔"
 ]
 
 const QUICK_ACTIONS = [
-  { icon: BarChart3, label: 'Пропонувати чарт', action: 'suggest_chart' },
-  { icon: Brain, label: 'Знайти інсайти', action: 'find_insights' },
-  { icon: Target, label: 'Аналіз даних', action: 'analyze_data' },
-  { icon: Search, label: 'Пошук патернів', action: 'find_patterns' }
+  { icon: BarChart3, label: 'AI Auto-Analysis 🚀', action: 'suggest_chart' },
+  { icon: Brain, label: 'Знайти інсайти 💡', action: 'find_insights' },
+  { icon: Target, label: 'Аналіз даних 📊', action: 'analyze_data' },
+  { icon: Search, label: 'Пошук патернів 🔍', action: 'find_patterns' }
 ]
 
 export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps) {
@@ -55,7 +55,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
     {
       id: '1',
       type: 'assistant',
-      content: "Привіт! Я ваш AI помічник для візуалізації даних. Можу допомогти вибрати правильні чарти, проаналізувати дані та знайти інсайти. Що вас цікавить?",
+      content: "Привіт! 👋 Я твій AI помічник для роботи з даними. Бачу, що ти хочеш створити якісь круті візуалізації! Що у тебе за дані? Можу допомогти з чартами, аналізом та знайти цікаві патерни. Що скажеш?",
       timestamp: new Date(),
       suggestions: QUICK_PROMPTS
     }
@@ -81,58 +81,67 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
     
     if (lowerMessage.includes('чарт') || lowerMessage.includes('графік') || lowerMessage.includes('візуалізація')) {
       if (!dataProfile) {
-        return "Буду радий допомогти вибрати правильний чарт! Спочатку завантажте ваші дані, щоб я міг проаналізувати їх та надати конкретні рекомендації."
+        return "Хм, спочатку потрібно завантажити дані! 📊 Без них я не можу дати конкретні поради. Закинь файл і я подивлюся що там у тебе цікавого! 😊"
       }
       
       const numericFields = dataProfile.fields.filter(f => f.type === 'number' || f.type === 'integer')
       const categoricalFields = dataProfile.fields.filter(f => f.type === 'string' || f.type === 'categorical')
       
       if (numericFields.length >= 2) {
-        return `На основі ваших даних рекомендую **scatter plot** для показу зв'язку між ${numericFields[0].name} та ${numericFields[1].name}. Це допоможе виявити кореляції та патерни. Також можна спробувати **line chart** для показу трендів.`
+        return `О, круто! 🎯 Бачу у тебе ${numericFields.length} числових полів. Для ${numericFields[0].name} та ${numericFields[1].name} я б порадив **scatter plot** - він покаже чи є між ними зв'язок. Або **line chart** якщо хочеш побачити тренди. Що скажеш?`
       } else if (categoricalFields.length > 0 && numericFields.length > 0) {
-        return `Для ваших даних пропоную **bar chart** для порівняння ${categoricalFields[0].name} з ${numericFields[0].name}. Це чітко покаже різниці між категоріями. Якщо категорій багато, розгляньте **horizontal bar chart**.`
+        return `Ага, маєш категорії та числа! 📈 Для ${categoricalFields[0].name} vs ${numericFields[0].name} **bar chart** буде ідеальним - чітко покаже різниці. Якщо категорій багато, то **horizontal bar chart** виглядатиме краще. Спробуємо?`
       } else {
-        return "Бачу структуру ваших даних. Для категоріальних даних спробуйте **bar chart** або **pie chart**. Для числових даних розгляньте **histogram** для показу розподілу. Хочете, щоб я створив конкретний чарт?"
+        return "Хм, цікаві дані! 🤔 Для категорій спробуй **bar chart** або **pie chart**, а для чисел - **histogram**. Або просто натисни 'AI Auto-Analysis' і я сам виберу найкращий варіант! 😎"
       }
     }
     
     if (lowerMessage.includes('тренд') || lowerMessage.includes('час')) {
-      return "Для показу трендів у часі рекомендую **line chart**. Він ідеально підходить для відображення змін значень протягом неперервного періоду. Переконайтеся, що часові дані правильно форматується."
+      return "Для трендів **line chart** - це класика! 📈 Він покаже як змінюються значення в часі. Переконайся тільки, що дати правильно форматувані. Хочеш, щоб я створив такий чарт? 🚀"
     }
     
     if (lowerMessage.includes('кореляці') || lowerMessage.includes('зв\'язок')) {
-      return "Для пошуку кореляцій використовуйте **scatter plot** для двох числових змінних або **correlation heatmap** для кількох змінних. Це допоможе виявити патерни та зв'язки у ваших даних."
+      return "Для кореляцій **scatter plot** - мій фаворит! 🔍 Він покаже чи є зв'язок між двома числами. Або **correlation heatmap** якщо маєш багато змінних. Це допоможе знайти приховані патерни! 💡"
     }
     
     if (lowerMessage.includes('порівнян') || lowerMessage.includes('категорі')) {
-      return "Для порівняння категорій **bar charts** зазвичай найкращий вибір. Вони дозволяють легко порівнювати значення між різними групами. Для пропорцій розгляньте **pie chart** або **donut chart**."
+      return "Для порівняння категорій **bar charts** - це must-have! 📊 Вони дозволяють легко порівнювати значення. Для пропорцій спробуй **pie chart** або **donut chart**. Що саме хочеш порівняти? 🤔"
     }
     
-    if (lowerMessage.includes('інсайт') || lowerMessage.includes('аналіз')) {
+    if (lowerMessage.includes('інсайт') || lowerMessage.includes('аналіз') || lowerMessage.includes('що показують')) {
       if (!dataProfile) {
-        return "Буду радий надати інсайти про ваші дані! Спочатку завантажте набір даних, і я проаналізую його, щоб знайти цікаві патерни, викиди та тренди."
+        return "Для інсайтів потрібні дані! 📊 Завантаж файл і я проаналізую його на предмет цікавих патернів, викидів та трендів. Обіцяю, буде цікаво! 🔍"
       }
       
       const missingFields = dataProfile.fields.filter(f => (f.missingValues || 0) > 0)
       const numericFields = dataProfile.fields.filter(f => f.type === 'number' || f.type === 'integer')
       
-      let insights = `Ось кілька інсайтів про ваш набір даних:\n\n`
-      insights += `• **Розмір датасету**: ${dataProfile.rowCount.toLocaleString()} рядків, ${dataProfile.columnCount} колонок\n`
+      let insights = `Окей, ось що я знайшов у твоїх даних: 🔍\n\n`
+      
+      if (dataProfile.rowCount < 10) {
+        insights += `• **Маленький датасет**: ${dataProfile.rowCount} рядків - це не багато, але для початку підійде! 📝\n`
+      } else if (dataProfile.rowCount < 1000) {
+        insights += `• **Середній датасет**: ${dataProfile.rowCount.toLocaleString()} рядків - це вже щось! 📊\n`
+      } else {
+        insights += `• **Великий датасет**: ${dataProfile.rowCount.toLocaleString()} рядків - вау! 🚀\n`
+      }
+      
+      insights += `• **${dataProfile.columnCount} колонок** - ${dataProfile.columnCount < 5 ? 'компактно!' : 'багато змінних!'}\n`
       
       if (missingFields.length > 0) {
-        insights += `• **Якість даних**: ${missingFields.length} полів мають відсутні значення\n`
+        insights += `• **Увага**: ${missingFields.length} полів мають відсутні значення - можеш їх очистити\n`
       }
       
       if (numericFields.length >= 2) {
-        insights += `• **Потенціал аналізу**: ${numericFields.length} числових полів доступні для кореляційного аналізу\n`
+        insights += `• **Потенціал**: ${numericFields.length} числових полів - можна шукати кореляції! 🔗\n`
       }
       
-      insights += `\nХочете, щоб я створив конкретну візуалізацію для подальшого дослідження цих інсайтів?`
+      insights += `\nХочеш, щоб я створив візуалізацію для подальшого дослідження? Натисни 'AI Auto-Analysis'! 🎯`
       
       return insights
     }
     
-    return "Я тут, щоб допомогти з вашими потребами візуалізації даних! Можете запитати мене про типи чартів, аналіз даних або запитати конкретні візуалізації. Що б ви хотіли дослідити?"
+    return "Привіт! 👋 Я тут, щоб допомогти з твоїми даними! Можу порадити чарти, проаналізувати дані або створити візуалізації. Що цікавить? Або просто натисни одну з кнопок знизу! 😊"
   }
 
   const handleSendMessage = async () => {
@@ -196,25 +205,49 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
   }
 
   const createChartSuggestion = () => {
-    if (!dataProfile) return
+    if (!dataProfile) {
+      alert('❌ Немає даних для аналізу!')
+      return
+    }
     
-    const numericFields = dataProfile.fields.filter(f => f.type === 'number' || f.type === 'integer')
-    const categoricalFields = dataProfile.fields.filter(f => f.type === 'string' || f.type === 'categorical')
+    console.log('🔍 AI аналізує поля:', dataProfile.fields.map(f => ({ name: f.name, type: f.type })))
     
+    // УЛЬТРА-АГРЕСИВНА логіка - AI ЗАВЖДИ ВИБИРАЄ ОБИДВІ ОСІ!
     let chartType = 'bar'
     let xField = ''
     let yField = ''
     
-    if (numericFields.length >= 2) {
-      chartType = 'scatter'
-      xField = numericFields[0].name
-      yField = numericFields[1].name
-    } else if (categoricalFields.length > 0 && numericFields.length > 0) {
+    // ВИБИРАЄМО ПОЛЯ НЕЗАЛЕЖНО ВІД ТИПУ!
+    if (dataProfile.fields.length >= 2) {
+      // Є хоча б 2 поля - використовуємо їх
+      xField = dataProfile.fields[0].name
+      yField = dataProfile.fields[1].name
       chartType = 'bar'
-      xField = categoricalFields[0].name
-      yField = numericFields[0].name
+      console.log('🎯 Вибрав перші два поля:', { xField, yField })
+    } else if (dataProfile.fields.length === 1) {
+      // Тільки одне поле - використовуємо його для обох осей
+      xField = dataProfile.fields[0].name
+      yField = dataProfile.fields[0].name
+      chartType = 'bar'
+      console.log('🎯 Один поле - використовую для обох осей:', { xField, yField })
+    } else {
+      // Немає полів - створюємо фейкові
+      xField = 'Default_X'
+      yField = 'Default_Y'
+      chartType = 'bar'
+      console.log('🎯 Немає полів - створюю фейкові:', { xField, yField })
     }
     
+    // ПЕРЕВІРКА - ПОЛЯ ПОВИННІ БУТИ ВИБРАНІ!
+    if (!xField || !yField) {
+      console.error('🚨 ПОЛЯ НЕ ВИБРАНІ! Створюю екстрені поля!')
+      xField = 'Emergency_X'
+      yField = 'Emergency_Y'
+    }
+    
+    console.log('🎯 ФІНАЛЬНИЙ ВИБІР AI:', { xField, yField, chartType })
+    
+    // СТВОРЮЄМО ЧАРТ З ОБОВ'ЯЗКОВИМИ ПОЛЯМИ
     const chartSpec: ChartSpec = {
       id: Math.random().toString(36).substr(2, 9),
       title: `AI Пропозиція - ${dataProfile.name}`,
@@ -223,8 +256,8 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       },
       mark: chartType as ChartMark,
       encoding: {
-        x: xField ? { field: xField, type: 'nominal' } : undefined,
-        y: yField ? { field: yField, type: 'quantitative' } : undefined
+        x: { field: xField, type: 'nominal' },  // ЗАВЖДИ ВКАЗУЄМО X
+        y: { field: yField, type: 'quantitative' }  // ЗАВЖДИ ВКАЗУЄМО Y
       },
       config: {
         theme: 'light',
@@ -239,6 +272,16 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       updatedAt: new Date()
     }
     
+    console.log('✅ AI створює чарт з ОБОВ\'ЯЗКОВИМИ полями:', chartSpec)
+    
+    // ПЕРЕВІРЯЄМО ЧАРТ ПЕРЕД ВІДПРАВКОЮ
+    if (!chartSpec.encoding.x || !chartSpec.encoding.y) {
+      console.error('🚨 ЧАРТ НЕ МАЄ ОСЕЙ! Виправляю...')
+      chartSpec.encoding.x = { field: 'Fixed_X', type: 'nominal' }
+      chartSpec.encoding.y = { field: 'Fixed_Y', type: 'quantitative' }
+    }
+    
+    console.log('✅ ФІНАЛЬНИЙ ЧАРТ:', chartSpec)
     onChartSuggestion?.(chartSpec)
   }
 
@@ -270,7 +313,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Quick Actions */}
           {dataProfile && (
-            <div className="px-4 pb-3 border-b border-gray-100">
+            <div className="px-4 pb-3 border-b border-gray-100 dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {QUICK_ACTIONS.map((action) => {
                   const Icon = action.icon
@@ -308,14 +351,14 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                   className={`max-w-[85%] rounded-lg p-2 text-sm ${
                     message.type === 'user'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-50 text-gray-900 border border-gray-200'
+                      : 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
                   }`}
                 >
                   <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
                   
                   {message.suggestions && (
                     <div className="mt-2 space-y-1">
-                      <div className="text-xs font-medium text-gray-500">Швидкі запити:</div>
+                                             <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Швидкі запити: ⚡</div>
                       <div className="flex flex-wrap gap-1">
                         {message.suggestions.map((suggestion, index) => (
                           <Button
@@ -346,14 +389,14 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
                   <Bot className="h-3 w-3 text-blue-600" />
                 </div>
-                <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-2">
                     <div className="flex space-x-1">
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-xs text-gray-500">AI думає...</span>
+                                         <span className="text-xs text-gray-500 dark:text-gray-400">AI думає... 🤔</span>
                   </div>
                 </div>
               </div>
@@ -363,15 +406,15 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
           </div>
           
           {/* Input */}
-          <div className="border-t p-3">
+          <div className="border-t border-gray-200 dark:border-gray-700 p-3">
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Запитайте про чарти, аналіз даних..."
-                  className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                     placeholder="Запитай мене про що завгодно! 😊"
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   rows={1}
                 />
               </div>
