@@ -628,7 +628,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Що ви хочете проаналізувати? (необов'язково)
+                  Що ви хочете проаналізувати? (необов&apos;язково)
                 </label>
                 <textarea
                   value={analysisPrompt}
