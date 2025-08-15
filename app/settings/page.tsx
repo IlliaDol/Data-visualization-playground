@@ -152,7 +152,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.autoSave}
                   onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
-                  className="h-4 w-4 text-blue-600 rounded"
+                  className="h-4 w-4 text-primary rounded"
                 />
               </div>
 
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.notifications}
                   onChange={(e) => handleSettingChange('notifications', e.target.checked)}
-                  className="h-4 w-4 text-blue-600 rounded"
+                  className="h-4 w-4 text-primary rounded"
                 />
               </div>
             </div>

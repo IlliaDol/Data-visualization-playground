@@ -173,7 +173,7 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                         <div className="text-sm text-muted-foreground">Змін</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">
+                        <div className="text-2xl font-bold text-success-600">
                           {cleanPlan.stats.duplicatesRemoved ? '✓' : '—'}
                         </div>
                         <div className="text-sm text-muted-foreground">Дублікати</div>
@@ -195,8 +195,8 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                       {cleanPlan.items.map((item, index) => (
                         <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                           <div className="flex-shrink-0">
-                            {item.op === 'setType' && <Hash className="h-4 w-4 text-blue-600" />}
-                            {item.op === 'parseDate' && <Calendar className="h-4 w-4 text-green-600" />}
+                            {item.op === 'setType' && <Hash className="h-4 w-4 text-primary" />}
+                            {item.op === 'parseDate' && <Calendar className="h-4 w-4 text-success-600" />}
                             {item.op === 'trim' && <FileText className="h-4 w-4 text-orange-600" />}
                             {item.op === 'dropDuplicates' && <Trash2 className="h-4 w-4 text-red-600" />}
                             {item.op === 'normalizeDecimal' && <Hash className="h-4 w-4 text-purple-600" />}
@@ -247,7 +247,7 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                                 <td className="p-2 text-muted-foreground">
                                   {String(item.before)}
                                 </td>
-                                <td className="p-2 text-green-600 font-medium">
+                                <td className="p-2 text-success-600 font-medium">
                                   {String(item.after)}
                                 </td>
                               </tr>

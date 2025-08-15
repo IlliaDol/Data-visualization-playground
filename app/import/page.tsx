@@ -137,7 +137,7 @@ export default function ImportPage() {
                       <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                         {importedData.length}
                       </div>
-                      <div className="text-sm text-green-600 dark:text-green-400">
+                      <div className="text-sm text-success-600">
                         Рядків даних
                       </div>
                     </div>
@@ -145,7 +145,7 @@ export default function ImportPage() {
                       <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                         {Object.keys(importedData[0] || {}).length}
                       </div>
-                      <div className="text-sm text-green-600 dark:text-green-400">
+                      <div className="text-sm text-success-600">
                         Колонок
                       </div>
                     </div>
@@ -153,7 +153,7 @@ export default function ImportPage() {
                       <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                         ✓
                       </div>
-                      <div className="text-sm text-green-600 dark:text-green-400">
+                      <div className="text-sm text-success-600">
                         Готово до обробки
                       </div>
                     </div>

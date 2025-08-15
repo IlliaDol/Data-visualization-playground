@@ -18,17 +18,15 @@ if ($LASTEXITCODE -ne 0) {
     git add .
     
     Write-Host "💾 Committing changes..." -ForegroundColor Yellow
-    git commit -m "✨ Add support for 20+ file formats
+    git commit -m "🔧 Fix deployment issues
 
-- Add CSV/TSV, JSON/XML, YAML/TOML, LOG support
-- Add Excel (.xlsx/.xls/.xlsm) support  
-- Add compressed formats (GZIP, ZIP)
-- Add Data Science formats (Parquet, NumPy, etc.)
+- Enable static export for GitHub Pages
+- Improve format testing robustness
 - Update GitHub Actions workflows
-- Add comprehensive documentation
-- Add test files and format validation
+- Fix Next.js configuration
+- Add better error handling
 
-Total formats supported: 20+ with 30+ extensions"
+This should resolve the failed deployments"
     
     Write-Host "✅ Changes committed successfully" -ForegroundColor Green
 } else {
@@ -52,15 +50,19 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "1. Check GitHub Actions in your repository"
     Write-Host "2. Monitor deployment progress"
     Write-Host "3. Check Vercel dashboard for live URL"
+    Write-Host "4. Check GitHub Pages for static deployment"
     Write-Host ""
-    Write-Host "🔧 Vercel credentials are already configured in the workflow"
+    Write-Host "🔧 Fixed issues:" -ForegroundColor Green
+    Write-Host "- Enabled static export for GitHub Pages"
+    Write-Host "- Improved format testing robustness"
+    Write-Host "- Updated workflow configurations"
     Write-Host ""
-    Write-Host "📊 Format support test will run automatically"
-    Write-Host "📄 Test report will be available in Actions artifacts"
+    Write-Host "📊 Format support test should now pass"
+    Write-Host "📄 GitHub Pages deployment should work"
 } else {
     Write-Host "❌ Error: Failed to push to GitHub" -ForegroundColor Red
     exit 1
 }
 
 Write-Host ""
-Write-Host "🎯 Your DataViz Playground with 20+ format support is being deployed!" -ForegroundColor Green
+Write-Host "🎯 Your DataViz Playground deployment issues should be resolved!" -ForegroundColor Green

@@ -20,7 +20,7 @@ const themeInfo = {
     icon: Moon,
     description: 'Темна тема',
     features: ['Зменшена втома очей', 'Нічне використання', 'Економія батареї'],
-    color: 'text-blue-400'
+            color: 'text-primary'
   },
   system: {
     name: 'Auto',

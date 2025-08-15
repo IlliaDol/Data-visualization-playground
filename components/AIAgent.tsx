@@ -543,7 +543,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
             <div className="space-y-4">
               <div className="bg-muted p-4 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-success-600" />
                   <h4 className="font-medium text-green-900 dark:text-green-100">
                     AI Анализ завершен
                   </h4>
@@ -600,7 +600,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                     <ul className="text-sm text-muted-foreground space-y-1">
                       {analysisResult.recommendations.map((rec, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-green-600">•</span>
+                          <span className="text-primary">•</span>
                           {rec}
                         </li>
                       ))}
@@ -611,13 +611,13 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                 {/* Statistical Tests */}
                 {analysisResult.statisticalTests.length > 0 && (
                   <div>
-                    <h5 className="font-medium text-green-800 dark:text-green-200 mb-2 flex items-center gap-1">
+                    <h5 className="font-medium text-foreground mb-2 flex items-center gap-1">
                       <Target className="h-4 w-4" />
                       Статистические тесты
                     </h5>
                     <div className="flex flex-wrap gap-1">
                       {analysisResult.statisticalTests.map((test, index) => (
-                        <span key={index} className="text-xs bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 px-2 py-1 rounded">
+                        <span key={index} className="text-xs bg-success/20 text-success-foreground px-2 py-1 rounded">
                           {test}
                         </span>
                       ))}

@@ -37,8 +37,8 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
 
   const getQualityScore = (field: any) => {
     const missingPercentage = (field.missingValues / dataProfile.rowCount) * 100
-    if (missingPercentage === 0) return { score: 100, label: 'Perfect', color: 'text-green-600' }
-    if (missingPercentage < 5) return { score: 90, label: 'Excellent', color: 'text-green-600' }
+    if (missingPercentage === 0) return { score: 100, label: 'Perfect', color: 'text-success-600' }
+    if (missingPercentage < 5) return { score: 90, label: 'Excellent', color: 'text-success-600' }
     if (missingPercentage < 10) return { score: 75, label: 'Good', color: 'text-yellow-600' }
     if (missingPercentage < 25) return { score: 50, label: 'Fair', color: 'text-orange-600' }
     return { score: 25, label: 'Poor', color: 'text-red-600' }

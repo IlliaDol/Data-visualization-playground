@@ -30,7 +30,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build with Next.js
-        run: npm run build
+        run: |
+          echo "🔨 Building Next.js static export..."
+          npm run build
+          echo "✅ Build completed"
+          ls -la out/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

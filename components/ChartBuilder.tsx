@@ -362,7 +362,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
                   <Card className="bg-card border-border">
         <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-foreground">
-            <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                          <BarChart3 className="h-5 w-5 text-primary" />
             Chart Builder
           </CardTitle>
         </CardHeader>
@@ -383,7 +383,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
                         : 'border-border hover:border-border/60'
                     }`}
                   >
-                    <Icon className="h-6 w-6 mb-2 text-blue-600 dark:text-blue-400" />
+                                          <Icon className="h-6 w-6 mb-2 text-primary" />
                                           <div className="font-medium text-sm text-foreground">{type.name}</div>
                       <div className="text-xs text-muted-foreground">{type.description}</div>
                   </button>
