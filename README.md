@@ -1,309 +1,170 @@
-# DataViz AI Playground 🚀
+# 🎉 DataViz AI Playground
 
-**AI-powered data visualization platform with support for 20+ file formats**
+**Потужний інструмент для створення інтерактивних візуалізацій та презентацій даних з AI-підтримкою**
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![AI Enhanced](https://img.shields.io/badge/AI-Enhanced-purple?style=for-the-badge&logo=openai)](https://openai.com/)
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/your-username/data-viz-playground/deploy.yml?branch=main&style=for-the-badge&logo=github-actions)](https://github.com/your-username/data-viz-playground/actions)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-## ✨ Features
+## 🚀 Основні Функції
 
-### 🤖 AI-Powered Analysis
-- **Intelligent Chart Recommendations**: AI analyzes your data and suggests the best chart types
-- **Automatic Field Detection**: Smart detection of numeric, categorical, and temporal data
-- **Statistical Insights**: Get recommendations for statistical tests and analysis methods
-- **Pattern Recognition**: AI identifies correlations, trends, and data patterns
-- **Natural Language Queries**: Ask questions about your data in plain language
+### 📊 **Створення Чартів**
+- **Автоматичне перенаправлення** на Dashboard після створення чарту
+- **Покращена валідація** з українськими повідомленнями
+- **Динамічний текст кнопки** показує що потрібно вибрати
+- **Детальні інструкції** для користувача
 
-### 📁 Universal File Format Support
-Support for **20+ file formats**:
+### 🎯 **Dashboard & Навігація**
+- **Eye icon** в Dashboard перенаправляє на сторінку редагування чарту
+- **Збереження стану** чарту в localStorage для передачі між сторінками
+- **Автоматичне завантаження** даних чарту для редагування
 
-#### Text Formats
-- **CSV/TSV**: Comma and tab-separated values
-- **JSON/JSON-LD**: JavaScript Object Notation
-- **XML**: Extensible Markup Language
-- **YAML/TOML**: Configuration file formats
-- **INI/CFG**: Configuration files
-- **LOG**: Log files with automatic parsing
+### 🎬 **Data Stories (Нова Функція!)**
+- **StoryBuilder** - повноцінний редактор для створення презентацій
+- **StoryPlayer** - професійний презентаційний режим
+- **Повноекранний перегляд** з автоматичним приховуванням контролів
+- **Автоматичне відтворення** з налаштованою тривалістю
+- **Клавіатурні скорочення** для керування
 
-#### Spreadsheet Formats
-- **Excel**: .xlsx, .xls, .xlsm files
-- **Google Sheets**: Import via CSV export
+## 🎨 Ключові Особливості
 
-#### Data Science Formats
-- **Parquet**: Columnar data format
-- **NumPy**: .npz, .npy files
-- **Pickle**: Python serialized objects
-- **HDF5**: Hierarchical data format
-- **Feather**: Fast columnar data format
-- **Arrow**: Apache Arrow format
-- **Avro**: Apache Avro format
-- **ORC**: Optimized Row Columnar format
+### **Покращений UX:**
+- 🔄 **Плавна навігація** між сторінками
+- 💡 **Інтуїтивні підказки** та інструкції
+- 🎨 **Візуальна зворотній зв'язок** для всіх дій
+- 🌐 **Українська локалізація** повідомлень
 
-#### Compressed Formats
-- **GZIP**: .gz, .gzip files
-- **ZIP**: .zip archives
-- **Pickle**: Python serialized objects
-- **HDF5**: Hierarchical Data Format
-- **Feather**: Fast binary format
-- **Arrow**: Apache Arrow format
-- **Avro**: Apache Avro format
-- **ORC**: Optimized Row Columnar format
+### **Data Stories - Нова Концепція:**
+- 📊 **Комбінація чартів та тексту** в презентаціях
+- ⏱️ **Контрольований таймінг** слайдів
+- 🎭 **Професійний презентаційний режим**
+- ⌨️ **Клавіатурні скорочення** для керування
 
-#### Compressed Formats
-- **GZIP**: .gz, .gzip files
-- **ZIP**: Compressed archives
+## 🚀 Швидкий Старт
 
-### 📊 Advanced Chart Types
-16+ chart types including:
-- **Bar Charts**: Vertical, horizontal, stacked
-- **Line Charts**: Time series and trends
-- **Scatter Plots**: Correlation analysis
-- **Pie Charts**: Proportions and distributions
-- **Histograms**: Data distributions
-- **Box Plots**: Statistical summaries
-- **Heatmaps**: Correlation matrices
-- **Gauge Charts**: KPIs and metrics
-- **Bubble Charts**: 3D scatter plots
-- **Waterfall Charts**: Cumulative effects
-- **Funnel Charts**: Conversion processes
-- **Radar Charts**: Multi-dimensional data
-- **Tree Maps**: Hierarchical data
-- **Sankey Diagrams**: Flow visualization
-
-### 💻 Code Export
-Export your visualizations as production-ready code:
-- **Python**: Plotly, Matplotlib
-- **R**: ggplot2, Plotly
-- **Image Export**: PNG, SVG, PDF
-
-### 🎨 Modern UI/UX
-- **Dark/Light Mode**: Automatic theme switching
-- **Responsive Design**: Works on all devices
-- **Interactive Charts**: Hover effects and animations
-- **Real-time Preview**: See changes instantly
-- **Drag & Drop**: Easy file upload
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
+### Встановлення
 ```bash
-git clone https://github.com/yourusername/data-viz-ai-playground.git
-cd data-viz-ai-playground
-```
+# Клонування репозиторію
+git clone https://github.com/IlliaDol/Data-visualization-playground.git
+cd Data-visualization-playground
 
-2. **Install dependencies**
-```bash
+# Встановлення залежностей
 npm install
-# or
-yarn install
-```
 
-3. **Run the development server**
-```bash
+# Запуск сервера розробки
 npm run dev
-# or
-yarn dev
 ```
 
-4. **Open your browser**
-Navigate to [http://localhost:3000](http://localhost:3000)
+### Використання
+1. **Відкрийте** `http://localhost:3000`
+2. **Завантажте дані** (CSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy)
+3. **Створіть чарт** → автоматичне перенаправлення на Dashboard
+4. **Натисніть Eye icon** → повернення до редактора чарту
+5. **Перейдіть на** `http://localhost:3000/stories` для створення Data Stories
 
-## 📖 Usage Guide
-
-### 1. Upload Your Data
-- Drag & drop files or click to browse
-- Supported formats: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, and more
-- Files up to 200MB supported
-
-### 2. AI Analysis
-- **Automatic Analysis**: AI analyzes your data structure and suggests charts
-- **Natural Language**: Ask questions like "Show me trends" or "Find correlations"
-- **Quick Actions**: Use preset analysis options
-- **Statistical Insights**: Get recommendations for statistical tests
-
-### 3. Create Visualizations
-- **AI Suggestions**: Let AI choose the best chart type and fields
-- **Manual Control**: Select chart type and fields manually
-- **Real-time Preview**: See your chart as you build it
-- **Customization**: Adjust colors, titles, and styling
-
-### 4. Export & Share
-- **Code Export**: Get Python or R code for your charts
-- **Image Export**: Save as PNG, SVG, or PDF
-- **Dashboard View**: View all your created charts
-
-## 🤖 AI Features Deep Dive
-
-### Intelligent Data Analysis
-The AI agent performs comprehensive data analysis:
-
-1. **Data Structure Analysis**
-   - Field type detection (numeric, categorical, temporal)
-   - Missing value analysis
-   - Data quality assessment
-   - Sample size evaluation
-
-2. **Pattern Recognition**
-   - Time series detection
-   - Geographic data identification
-   - Hierarchical data structures
-   - Correlation patterns
-
-3. **Chart Recommendations**
-   - Optimal chart type selection
-   - Field mapping suggestions
-   - Color encoding recommendations
-   - Statistical test suggestions
-
-### Natural Language Processing
-Ask questions in plain language:
-- "Show me the distribution of users by name"
-- "Find correlations between fields"
-- "Display trends over time"
-- "Compare categories"
-- "Show proportions"
-
-### Statistical Insights
-Get recommendations for:
-- **Descriptive Statistics**: Mean, median, standard deviation
-- **Correlation Analysis**: Pearson, Spearman correlations
-- **Hypothesis Testing**: t-tests, ANOVA, chi-square tests
-- **Regression Analysis**: Linear, polynomial regression
-- **Time Series Analysis**: ARIMA, seasonal decomposition
-
-## 🛠️ Technical Architecture
-
-### Frontend
-- **Next.js 14**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling
-- **Lucide Icons**: Beautiful icon library
-- **Recharts**: Chart rendering library
-
-### AI Components
-- **AIAgent**: Core AI analysis engine
-- **Data Profiling**: Automatic field type detection
-- **Pattern Recognition**: Data structure analysis
-- **Chart Recommendations**: Intelligent suggestions
-
-### File Processing
-- **Universal Parser**: Handles 20+ file formats
-- **Format Detection**: Automatic file type recognition
-- **Data Validation**: Quality checks and error handling
-- **Compression Support**: GZIP and ZIP file handling
-
-## 📁 Project Structure
+## 📁 Структура Проекту
 
 ```
-data-viz-ai-playground/
-├── app/                    # Next.js App Router
-│   ├── dashboards/        # Dashboard pages
-│   ├── settings/          # Settings pages
-│   ├── stories/           # Story pages
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   ├── ui/               # UI components
-│   ├── AIAgent.tsx       # AI analysis engine
-│   ├── AIAssistant.tsx   # AI chat interface
-│   ├── ChartBuilder.tsx  # Chart creation
-│   ├── ChartRenderer.tsx # Chart rendering
-│   ├── DataProfile.tsx   # Data profiling
-│   ├── FileUpload.tsx    # File upload
-│   └── Navigation.tsx    # Navigation
-├── lib/                  # Utility functions
-│   ├── utils.ts          # File parsing & utilities
-│   └── i18n.ts           # Internationalization
-├── types/                # TypeScript types
-│   └── index.ts          # Type definitions
-└── public/               # Static assets
+components/
+├── ChartBuilder.tsx      # Покращений редактор чартів
+├── Dashboard.tsx         # Оновлений dashboard з навігацією
+├── StoryBuilder.tsx      # Новий компонент для створення stories
+├── StoryPlayer.tsx       # Компонент для перегляду stories
+└── ChartRenderer.tsx     # Рендерер чартів
+
+app/
+├── page.tsx              # Головна сторінка з логікою редагування
+├── dashboards/page.tsx   # Dashboard з чартами
+├── stories/page.tsx      # Список stories
+└── stories/play/[id]/    # Презентаційний режим
 ```
 
-## 🔧 Configuration
+## 🎯 Підтримувані Формати
 
-### Environment Variables
-Create a `.env.local` file:
+- **CSV/TSV** - табличні дані
+- **Excel (.xlsx)** - складні таблиці
+- **JSON** - структуровані дані
+- **XML** - ієрархічні дані
+- **YAML/TOML** - конфігураційні файли
+- **LOG** - лог-файли
+- **Parquet** - колонкові дані
+- **NumPy (.npy)** - числові масиви
 
-```env
-# Optional: Analytics
-NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+## 🎬 Data Stories - Як Використовувати
 
-# Optional: AI API (for future enhancements)
-AI_API_KEY=your_ai_api_key
-```
+### Створення Story:
+1. Перейдіть на `/stories`
+2. Натисніть "Створити Story"
+3. Додайте слайди з чартами та текстом
+4. Налаштуйте тривалість кожного слайду
 
-### Customization
-- **Themes**: Modify `tailwind.config.js` for custom colors
-- **Charts**: Add new chart types in `ChartRenderer.tsx`
-- **File Formats**: Extend parsers in `lib/utils.ts`
-- **AI Logic**: Customize analysis in `AIAgent.tsx`
+### Презентаційний режим:
+- **Клавіатурні скорочення:**
+  - `→` або `Space` - наступний слайд
+  - `←` - попередній слайд
+  - `Escape` - закрити
+  - `F` - повноекранний режим
+  - `M` - мовчання
 
-## 🚀 Deployment
+## 🔧 Технічні Деталі
 
-### Vercel (Recommended)
-```bash
-npm install -g vercel
-vercel
-```
+### Технології:
+- **Next.js 14** - React фреймворк
+- **TypeScript** - типізація
+- **Tailwind CSS** - стилізація
+- **Vega-Lite** - візуалізація даних
+- **Shadcn/ui** - UI компоненти
 
-### Docker
-```bash
-docker build -t data-viz-ai .
-docker run -p 3000:3000 data-viz-ai
-```
+### Покращення:
+- 🔧 **Покращена обробка помилок**
+- 💾 **Ефективне збереження стану** в localStorage
+- ⚡ **Оптимізована продуктивність**
+- 🛡️ **Надійна валідація даних**
 
-### Manual Deployment
+## 📚 Документація
+
+- [IMPROVEMENTS.md](IMPROVEMENTS.md) - Детальний опис покращень
+- [FINAL_SUMMARY.md](FINAL_SUMMARY.md) - Фінальний підсумок
+- [FORMATS.md](FORMATS.md) - Підтримувані формати файлів
+- [QUICKSTART.md](QUICKSTART.md) - Швидкий старт
+
+## 🚀 Розгортання
+
+### Vercel (Рекомендовано)
 ```bash
 npm run build
-npm start
+# Деплой через Vercel CLI або GitHub integration
 ```
 
-## 🤝 Contributing
+### GitHub Pages
+```bash
+npm run build
+npm run export
+# Деплой в папку /docs
+```
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+## 🤝 Внесок
 
-### Development Guidelines
-- Follow TypeScript best practices
-- Use Tailwind CSS for styling
-- Write comprehensive tests
-- Update documentation
-- Follow conventional commits
+1. Fork проект
+2. Створіть feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit зміни (`git commit -m 'Add some AmazingFeature'`)
+4. Push в branch (`git push origin feature/AmazingFeature`)
+5. Відкрийте Pull Request
 
-## 📄 License
+## 📄 Ліцензія
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Цей проект ліцензований під MIT License - дивіться файл [LICENSE](LICENSE) для деталей.
 
-## 🙏 Acknowledgments
+## 🙏 Подяки
 
-- **Next.js Team**: For the amazing framework
-- **Tailwind CSS**: For the utility-first CSS framework
-- **Recharts**: For the chart library
-- **Lucide**: For the beautiful icons
-- **OpenAI**: For AI inspiration
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/data-viz-ai-playground/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/data-viz-ai-playground/discussions)
-- **Email**: support@dataviz-ai.com
+- [Next.js](https://nextjs.org/) за чудовий фреймворк
+- [Tailwind CSS](https://tailwindcss.com/) за стилізацію
+- [Vega-Lite](https://vega.github.io/vega-lite/) за візуалізацію
+- [Shadcn/ui](https://ui.shadcn.com/) за UI компоненти
 
 ---
 
-**Made with ❤️ by the DataViz AI Team**
+**🎉 DataViz AI Playground** - Потужний інструмент для створення інтерактивних візуалізацій та презентацій даних!
 
-*Transform your data into insights with AI-powered visualization!*
+⭐ **Якщо вам сподобався проект, поставте зірку на GitHub!**
