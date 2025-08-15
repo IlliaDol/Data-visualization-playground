@@ -352,7 +352,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Quick Actions */}
           {dataProfile && (
-            <div className="px-4 pb-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="px-4 pb-3 border-b border-border">
               <div className="grid grid-cols-2 gap-2">
                 {QUICK_ACTIONS.map((action) => {
                   const Icon = action.icon

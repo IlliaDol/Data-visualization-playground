@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Settings, Key, Globe, Download, Upload, Eye, EyeOff } from 'lucide-react'
-import { ThemeDemo } from '@/components/ThemeDemo'
+
 
 
 export default function SettingsPage() {
@@ -93,9 +93,6 @@ export default function SettingsPage() {
             Configure your Data Visualization Playground preferences
           </p>
         </div>
-
-                    {/* Theme Demo */}
-            <ThemeDemo />
 
 
 

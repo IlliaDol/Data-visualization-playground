@@ -380,7 +380,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
                     className={`p-4 border rounded-lg text-left transition-colors ${
                       selectedChartType === type.id
                         ? 'border-primary bg-primary/10'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        : 'border-border hover:border-border/60'
                     }`}
                   >
                     <Icon className="h-6 w-6 mb-2 text-blue-600 dark:text-blue-400" />

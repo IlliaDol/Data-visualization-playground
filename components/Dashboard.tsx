@@ -279,10 +279,10 @@ export function Dashboard({
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Chart Type
                 </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
+                <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
                   <option value="">All types</option>
                   <option value="bar">Bar charts</option>
                   <option value="line">Line charts</option>
@@ -292,10 +292,10 @@ export function Dashboard({
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Date Range
                 </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
+                <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
                   <option value="">All time</option>
                   <option value="today">Today</option>
                   <option value="week">This week</option>
@@ -305,10 +305,10 @@ export function Dashboard({
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Status
                 </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
+                <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
                   <option value="">All charts</option>
                   <option value="published">Published</option>
                   <option value="draft">Draft</option>
@@ -391,7 +391,7 @@ export function Dashboard({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {getChartIcon(chart.mark)}
-                    <CardTitle className="text-lg text-gray-900 dark:text-white font-bold">{chart.title}</CardTitle>
+                    <CardTitle className="text-lg text-foreground font-bold">{chart.title}</CardTitle>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button
@@ -458,9 +458,9 @@ export function Dashboard({
                   {/* Тут потрібно буде передати dataProfile, але поки що покажемо заглушку */}
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center">
-                      <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Chart Preview</p>
-                                              <p className="text-xs text-gray-400 dark:text-gray-500">
+                                      <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">Chart Preview</p>
+                <p className="text-xs text-muted-foreground">
                           {chart.mark} chart
                         </p>
                     </div>
@@ -469,11 +469,11 @@ export function Dashboard({
                 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Type:</span>
+                                          <span className="text-muted-foreground">Type:</span>
                     <span className="font-medium capitalize">{chart.mark}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Created:</span>
+                                          <span className="text-muted-foreground">Created:</span>
                     <span className="font-medium">
                       {chart.createdAt.toLocaleDateString()}
                     </span>
@@ -502,8 +502,8 @@ export function Dashboard({
                     </div>
                     
                     <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white">{chart.title}</h3>
-                                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                      <h3 className="font-bold text-foreground">{chart.title}</h3>
+                <p className="text-sm text-muted-foreground">
                           {chart.mark} chart • Created {chart.createdAt.toLocaleDateString()}
                         </p>
                     </div>
@@ -578,11 +578,11 @@ export function Dashboard({
         <Card>
           <CardContent className="py-12">
             <div className="text-center">
-              <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 No charts yet
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Завантажте дані та створіть свій перший чарт на головній сторінці
               </p>
               <Button onClick={() => window.location.href = '/'}>
@@ -600,8 +600,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Charts</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{charts.length}</p>
+                <p className="text-sm text-muted-foreground">Total Charts</p>
+                <p className="text-2xl font-bold text-foreground">{charts.length}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-blue-500" />
             </div>
@@ -612,8 +612,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Chart Types</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Chart Types</p>
+                <p className="text-2xl font-bold text-foreground">
                   {Array.from(new Set(charts.map(chart => chart.mark))).length}
                 </p>
               </div>
@@ -626,8 +626,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Data Sources</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Data Sources</p>
+                <p className="text-2xl font-bold text-foreground">
                   {Array.from(new Set(charts.map(chart => chart.data.sourceId))).length}
                 </p>
               </div>
@@ -640,8 +640,8 @@ export function Dashboard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Last Created</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Last Created</p>
+                <p className="text-2xl font-bold text-foreground">
                   {charts.length > 0 
                     ? new Date(Math.max(...charts.map(chart => chart.createdAt.getTime()))).toLocaleDateString()
                     : 'None'

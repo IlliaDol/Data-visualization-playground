@@ -157,8 +157,8 @@ export default function StoriesPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Stories</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stories.length}</p>
+                                    <p className="text-sm text-muted-foreground">Total Stories</p>
+                <p className="text-2xl font-bold text-foreground">{stories.length}</p>
                   </div>
                 <FileText className="h-8 w-8 text-blue-500" />
               </div>
@@ -169,8 +169,8 @@ export default function StoriesPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Published</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <p className="text-sm text-muted-foreground">Published</p>
+                <p className="text-2xl font-bold text-foreground">
                       {stories.filter(s => s.status === 'published').length}
                     </p>
                   </div>
@@ -183,8 +183,8 @@ export default function StoriesPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Views</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <p className="text-sm text-muted-foreground">Total Views</p>
+                <p className="text-2xl font-bold text-foreground">
                       {stories.reduce((sum, story) => sum + (story.views || 0), 0).toLocaleString()}
                     </p>
                   </div>
@@ -197,8 +197,8 @@ export default function StoriesPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Charts</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <p className="text-sm text-muted-foreground">Total Charts</p>
+                <p className="text-2xl font-bold text-foreground">
                       {stories.reduce((sum, story) => sum + (story.slides?.length || 0), 0)}
                     </p>
                   </div>
@@ -238,8 +238,8 @@ export default function StoriesPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg mb-2 text-gray-900 dark:text-white font-bold">{story.title}</CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                      <CardTitle className="text-lg mb-2 text-foreground font-bold">{story.title}</CardTitle>
+                <p className="text-sm text-muted-foreground line-clamp-2">
                         {story.description}
                       </p>
                     </div>
@@ -252,7 +252,7 @@ export default function StoriesPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {/* Story Stats */}
-                                         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                        <div className="flex items-center gap-4">
                          <span className="flex items-center gap-1">
                            <FileText className="h-4 w-4" />
@@ -307,11 +307,11 @@ export default function StoriesPage() {
           <Card>
             <CardContent className="py-12">
               <div className="text-center">
-                <FileText className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No stories yet
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-muted-foreground mb-6">
                   {(() => {
                     if (typeof window === 'undefined') return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити історію'
                     const savedCharts = localStorage.getItem('userCharts')
@@ -377,7 +377,7 @@ export default function StoriesPage() {
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white font-bold">Quick Actions</CardTitle>
+                            <CardTitle className="text-foreground font-bold">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -292,7 +292,7 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                 {cleanedData && (
                   <Card className="border-border bg-muted">
                     <CardContent className="pt-6">
-                      <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
+                                              <div className="flex items-center gap-2 text-foreground">
                         <CheckCircle className="h-5 w-5" />
                         <span className="font-medium">Дані успішно очищено!</span>
                       </div>

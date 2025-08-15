@@ -553,10 +553,10 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     {getChartIcon(analysisResult.chartType)}
-                    <span className="font-medium text-green-800 dark:text-green-200">
+                                            <span className="font-medium text-foreground">
                       Рекомендуемый тип: {analysisResult.chartType.toUpperCase()}
                     </span>
-                    <span className="text-xs bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 px-2 py-1 rounded">
+                                            <span className="text-xs bg-success/20 text-success-foreground px-2 py-1 rounded">
                       Уверенность: {Math.round(analysisResult.confidence * 100)}%
                     </span>
                   </div>
@@ -575,14 +575,14 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                 {/* Insights */}
                 {analysisResult.insights.length > 0 && (
                   <div className="mb-4">
-                    <h5 className="font-medium text-green-800 dark:text-green-200 mb-2 flex items-center gap-1">
+                    <h5 className="font-medium text-foreground mb-2 flex items-center gap-1">
                       <Lightbulb className="h-4 w-4" />
                       Инсайты
                     </h5>
-                    <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                    <ul className="text-sm text-muted-foreground space-y-1">
                       {analysisResult.insights.map((insight, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-green-600">•</span>
+                          <span className="text-primary">•</span>
                           {insight}
                         </li>
                       ))}
@@ -593,11 +593,11 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                 {/* Recommendations */}
                 {analysisResult.recommendations.length > 0 && (
                   <div className="mb-4">
-                    <h5 className="font-medium text-green-800 dark:text-green-200 mb-2 flex items-center gap-1">
+                    <h5 className="font-medium text-foreground mb-2 flex items-center gap-1">
                       <Zap className="h-4 w-4" />
                       Рекомендации
                     </h5>
-                    <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                    <ul className="text-sm text-muted-foreground space-y-1">
                       {analysisResult.recommendations.map((rec, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-green-600">•</span>

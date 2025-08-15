@@ -124,9 +124,9 @@ export default function ImportPage() {
           {importedData.length > 0 && (
             <div className="space-y-6">
               {/* Інформація про імпорт */}
-              <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+              <Card className="border-border bg-muted">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-800 dark:text-green-200">
+                                      <CardTitle className="flex items-center gap-2 text-foreground">
                     <CheckCircle className="h-5 w-5" />
                     Імпорт успішний
                   </CardTitle>
