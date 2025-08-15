@@ -14,7 +14,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.7.0",
+    "@anthropic-ai/sdk": "^0.60.0",
     "@apache-arrow/ts": "^14.0.0",
     "@duckdb/duckdb-wasm": "^1.28.0",
     "@hookform/resolvers": "^3.3.0",
