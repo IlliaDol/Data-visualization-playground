@@ -51,7 +51,7 @@ const QUICK_ACTIONS = [
   { icon: Search, label: 'Пошук патернів 🔍', action: 'find_patterns' }
 ]
 
-export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps) {
+export function AIAssistant({ dataProfile, onChartSuggestion, onAnalysisComplete }: AIAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -65,6 +65,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
   const [isTyping, setIsTyping] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [hasAutoAnalyzed, setHasAutoAnalyzed] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -305,9 +306,9 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       confidence: 0.8,
       reasoning: `AI выбрал ${chartType} на основе структуры данных`,
       insights: [
-        `Найдено ${numericFields.length} числовых полей`,
-        `Найдено ${categoricalFields.length} категориальных полей`,
-        `Рекомендуется ${chartType} для лучшей визуализации`
+        `Найдено ${numericFields.length} числових полів`,
+        `Найдено ${categoricalFields.length} категоріальних полів`,
+        `Рекомендуется ${chartType} для кращої візуалізації`
       ],
       recommendations: [
         'Проведите дополнительный анализ данных',
@@ -321,8 +322,82 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       ]
     }
     
-    // onAnalysisComplete?.(analysisResult) // This line was removed as per the edit hint
+    onAnalysisComplete?.(analysisResult)
   }
+
+  // Автоматичний легкий аналіз одразу після появи даних (без створення чарту)
+  useEffect(() => {
+    if (!dataProfile || hasAutoAnalyzed) return
+
+    const runAutoAnalysis = () => {
+      const numericFields = dataProfile.fields.filter(f => {
+        const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
+        return sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
+      })
+      const categoricalFields = dataProfile.fields.filter(f => {
+        const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
+        return !sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
+      })
+
+      let chartType = 'bar'
+      let xField = ''
+      let yField = ''
+
+      if (categoricalFields.length > 0 && numericFields.length > 0) {
+        chartType = 'bar'
+        xField = categoricalFields[0].name
+        yField = numericFields[0].name
+      } else if (numericFields.length >= 2) {
+        chartType = 'scatter'
+        xField = numericFields[0].name
+        yField = numericFields[1].name
+      } else if (numericFields.length === 1) {
+        chartType = 'histogram'
+        xField = numericFields[0].name
+        yField = numericFields[0].name
+      } else if (categoricalFields.length >= 2) {
+        chartType = 'pie'
+        xField = categoricalFields[0].name
+        yField = ''
+      } else if (categoricalFields.length === 1) {
+        chartType = 'bar'
+        xField = categoricalFields[0].name
+        yField = ''
+      } else {
+        if (dataProfile.fields.length >= 2) {
+          xField = dataProfile.fields[0].name
+          yField = dataProfile.fields[1].name
+        } else if (dataProfile.fields.length === 1) {
+          xField = dataProfile.fields[0].name
+          yField = dataProfile.fields[0].name
+        }
+      }
+
+      const analysisResult = {
+        chartType,
+        xField,
+        yField,
+        confidence: 0.8,
+        reasoning: `Автоаналіз: рекомендовано ${chartType} на основі структури даних`,
+        insights: [
+          `Числових полів: ${numericFields.length}`,
+          `Категоріальних полів: ${categoricalFields.length}`
+        ],
+        recommendations: [
+          'Перевірте типи полів та відсутні значення',
+          'Спробуйте декілька типів графіків'
+        ],
+        statisticalTests: [
+          'Описательная статистика'
+        ]
+      }
+
+      onAnalysisComplete?.(analysisResult)
+      setHasAutoAnalyzed(true)
+    }
+
+    runAutoAnalysis()
+  }, [dataProfile, hasAutoAnalyzed, onAnalysisComplete])
 
   return (
     <Card className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'h-16' : 'h-[500px]'}`}>
