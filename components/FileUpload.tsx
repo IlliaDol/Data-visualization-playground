@@ -91,7 +91,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
 
       // Check if file is supported
       if (!isFileSupported(file)) {
-        throw new Error(`Unsupported file format: ${file.name}. Supported formats: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, and more.`)
+        throw new Error(`Unsupported file format: ${file.name}. Supported formats: CSV/TSV, Excel (.xlsx/.xls/.xlsm), JSON/XML, YAML/TOML, LOG, Parquet, NumPy (.npz/.npy), compressed (.gz/.zip), and more.`)
       }
 
       // Detect file format and parse

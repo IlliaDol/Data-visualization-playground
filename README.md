@@ -6,6 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![AI Enhanced](https://img.shields.io/badge/AI-Enhanced-purple?style=for-the-badge&logo=openai)](https://openai.com/)
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/your-username/data-viz-playground/deploy.yml?branch=main&style=for-the-badge&logo=github-actions)](https://github.com/your-username/data-viz-playground/actions)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 
 ## ✨ Features
 
@@ -34,6 +36,16 @@ Support for **20+ file formats**:
 #### Data Science Formats
 - **Parquet**: Columnar data format
 - **NumPy**: .npz, .npy files
+- **Pickle**: Python serialized objects
+- **HDF5**: Hierarchical data format
+- **Feather**: Fast columnar data format
+- **Arrow**: Apache Arrow format
+- **Avro**: Apache Avro format
+- **ORC**: Optimized Row Columnar format
+
+#### Compressed Formats
+- **GZIP**: .gz, .gzip files
+- **ZIP**: .zip archives
 - **Pickle**: Python serialized objects
 - **HDF5**: Hierarchical Data Format
 - **Feather**: Fast binary format

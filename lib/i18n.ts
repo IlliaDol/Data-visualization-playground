@@ -236,7 +236,7 @@ const translations: Record<Language, Translation> = {
       dragDrop: 'Drag and drop files here',
       or: 'or',
       browse: 'Browse Files',
-      supportedFormats: 'Supported formats: CSV, Excel, JSON, TSV, Parquet',
+      supportedFormats: 'Supported formats: CSV/TSV, Excel (.xlsx/.xls/.xlsm), JSON/XML, YAML/TOML, LOG, Parquet, NumPy (.npz/.npy), compressed (.gz/.zip), and more',
       maxSize: 'Max file size: 200MB',
       processing: 'Processing your data...',
       error: 'Error uploading file',

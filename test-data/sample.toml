@@ -1,0 +1,29 @@
+[[employees]]
+name = "John"
+age = 25
+city = "New York"
+salary = 50000
+
+[[employees]]
+name = "Alice"
+age = 30
+city = "Los Angeles"
+salary = 60000
+
+[[employees]]
+name = "Bob"
+age = 35
+city = "Chicago"
+salary = 55000
+
+[[employees]]
+name = "Eve"
+age = 28
+city = "Boston"
+salary = 52000
+
+[[employees]]
+name = "David"
+age = 32
+city = "Seattle"
+salary = 58000

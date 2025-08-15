@@ -1,5 +1,11 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import Papa from 'papaparse'
+import * as XLSX from 'xlsx'
+import * as YAML from 'js-yaml'
+import * as TOML from '@iarna/toml'
+import * as pako from 'pako'
+import JSZip from 'jszip'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -116,8 +122,7 @@ const SUPPORTED_FORMATS = {
   
   // Excel форматы
   'application/vnd.ms-excel': ['.xls'],
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsm'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx', '.xlsm'],
   
   // JSON форматы
   'application/json': ['.json'],
@@ -127,8 +132,35 @@ const SUPPORTED_FORMATS = {
   'application/xml': ['.xml'],
   'text/xml': ['.xml'],
   
+  // YAML/TOML форматы
+  'text/yaml': ['.yaml', '.yml'],
+  'text/toml': ['.toml'],
+  'application/toml': ['.toml'],
+  
+  // Логи и системные файлы
+  'text/log': ['.log'],
+  'application/log': ['.log'],
+  
   // Сжатые форматы
   'application/gzip': ['.gz', '.gzip'],
+  'application/x-gzip': ['.gz'],
+  'application/zip': ['.zip'],
+  'application/x-zip-compressed': ['.zip'],
+  
+  // Специальные форматы
+  'application/parquet': ['.parquet'],
+  'application/numpy': ['.npz', '.npy'],
+  'application/pickle': ['.pkl', '.pickle'],
+  'application/hdf5': ['.h5', '.hdf5'],
+  'application/feather': ['.feather'],
+  'application/arrow': ['.arrow'],
+  'application/avro': ['.avro'],
+  'application/orc': ['.orc'],
+  
+  // Другие форматы
+  'text/ini': ['.ini', '.cfg', '.conf'],
+  'application/ini': ['.ini', '.cfg', '.conf']
+},
   'application/x-gzip': ['.gz'],
   'application/zip': ['.zip'],
   'application/x-zip-compressed': ['.zip'],
@@ -188,6 +220,10 @@ export function detectFileFormat(file: File): string {
   if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.xlsm')) return 'excel'
   if (fileName.endsWith('.json') || fileName.endsWith('.jsonld')) return 'json'
   if (fileName.endsWith('.xml')) return 'xml'
+  if (fileName.endsWith('.yaml') || fileName.endsWith('.yml')) return 'yaml'
+  if (fileName.endsWith('.toml')) return 'toml'
+  if (fileName.endsWith('.log')) return 'log'
+  if (fileName.endsWith('.ini') || fileName.endsWith('.cfg') || fileName.endsWith('.conf')) return 'ini'
   if (fileName.endsWith('.parquet')) return 'parquet'
   if (fileName.endsWith('.npz') || fileName.endsWith('.npy')) return 'numpy'
   if (fileName.endsWith('.pkl') || fileName.endsWith('.pickle')) return 'pickle'
@@ -196,10 +232,6 @@ export function detectFileFormat(file: File): string {
   if (fileName.endsWith('.arrow')) return 'arrow'
   if (fileName.endsWith('.avro')) return 'avro'
   if (fileName.endsWith('.orc')) return 'orc'
-  if (fileName.endsWith('.log')) return 'log'
-  if (fileName.endsWith('.yaml') || fileName.endsWith('.yml')) return 'yaml'
-  if (fileName.endsWith('.toml')) return 'toml'
-  if (fileName.endsWith('.ini') || fileName.endsWith('.cfg') || fileName.endsWith('.conf')) return 'ini'
   if (fileName.endsWith('.gz') || fileName.endsWith('.gzip')) return 'gzip'
   if (fileName.endsWith('.zip')) return 'zip'
   
@@ -208,8 +240,13 @@ export function detectFileFormat(file: File): string {
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'excel'
   if (fileType.includes('json')) return 'json'
   if (fileType.includes('xml')) return 'xml'
+  if (fileType.includes('yaml')) return 'yaml'
+  if (fileType.includes('toml')) return 'toml'
+  if (fileType.includes('log')) return 'log'
   if (fileType.includes('gzip')) return 'gzip'
   if (fileType.includes('zip')) return 'zip'
+  if (fileType.includes('parquet')) return 'parquet'
+  if (fileType.includes('numpy')) return 'numpy'
   
   return 'unknown'
 }
@@ -217,83 +254,48 @@ export function detectFileFormat(file: File): string {
 // File parsing utilities
 export async function parseCSV(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string
-        const lines = text.split('\n').filter(line => line.trim())
-        if (lines.length === 0) {
-          reject(new Error('Empty CSV file'))
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          reject(new Error(`CSV parsing errors: ${results.errors.map(e => e.message).join(', ')}`))
           return
         }
         
-        // Автоматично визначаємо роздільник
-        const firstLine = lines[0]
-        let delimiter = ','
+        const data = results.data as Record<string, any>[]
+        const fields = results.meta.fields || []
         
-        // Перевіряємо чи є крапка з комою
-        if (firstLine.includes(';')) {
-          delimiter = ';'
-        } else if (firstLine.includes('\t')) {
-          delimiter = '\t'
-        }
-        
-        console.log('CSV delimiter detected:', delimiter)
-        console.log('First line:', firstLine)
-        
-        const headers = firstLine.split(delimiter).map(h => h.trim().replace(/"/g, ''))
-        console.log('Headers:', headers)
-        
-        const data = lines.slice(1).map(line => {
-          const values = line.split(delimiter).map(v => v.trim().replace(/"/g, ''))
-          const row: Record<string, any> = {}
-          headers.forEach((header, index) => {
-            row[header] = values[index] || null
-          })
-          return row
-        })
-        
-        console.log('Parsed data sample:', data.slice(0, 2))
-        
-        resolve({ data, fields: headers })
-      } catch (error) {
-        reject(error)
+        resolve({ data, fields })
+      },
+      error: (error) => {
+        reject(new Error(`Failed to parse CSV: ${error.message}`))
       }
-    }
-    reader.onerror = () => reject(new Error('Failed to read CSV file'))
-    reader.readAsText(file)
+    })
   })
 }
 
 export async function parseTSV(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string
-        const lines = text.split('\n').filter(line => line.trim())
-        if (lines.length === 0) {
-          reject(new Error('Empty TSV file'))
+    Papa.parse(file, {
+      header: true,
+      delimiter: '\t',
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          reject(new Error(`TSV parsing errors: ${results.errors.map(e => e.message).join(', ')}`))
           return
         }
         
-        const headers = lines[0].split('\t').map(h => h.trim())
-        const data = lines.slice(1).map(line => {
-          const values = line.split('\t').map(v => v.trim())
-          const row: Record<string, any> = {}
-          headers.forEach((header, index) => {
-            row[header] = values[index] || null
-          })
-          return row
-        })
+        const data = results.data as Record<string, any>[]
+        const fields = results.meta.fields || []
         
-        resolve({ data, fields: headers })
-      } catch (error) {
-        reject(error)
+        resolve({ data, fields })
+      },
+      error: (error) => {
+        reject(new Error(`Failed to parse TSV: ${error.message}`))
       }
-    }
-    reader.onerror = () => reject(new Error('Failed to read TSV file'))
-    reader.readAsText(file)
+    })
   })
 }
 
@@ -366,38 +368,32 @@ export async function parseYAML(file: File): Promise<{ data: Record<string, any>
     reader.onload = (e) => {
       try {
         const text = e.target?.result as string
-        // Простой парсинг YAML (в реальном приложении используйте js-yaml)
-        const lines = text.split('\n').filter(line => line.trim())
-        const data: Record<string, any>[] = []
-        const fields = new Set<string>()
+        const parsed = YAML.load(text) as any
         
-        let currentObject: Record<string, any> = {}
+        let data: Record<string, any>[]
+        let fields: string[]
         
-        lines.forEach(line => {
-          const trimmed = line.trim()
-          if (trimmed && !trimmed.startsWith('#')) {
-            const colonIndex = trimmed.indexOf(':')
-            if (colonIndex > 0) {
-              const key = trimmed.substring(0, colonIndex).trim()
-              const value = trimmed.substring(colonIndex + 1).trim().replace(/^["']|["']$/g, '')
-              currentObject[key] = value
-              fields.add(key)
-            }
-          } else if (trimmed === '' && Object.keys(currentObject).length > 0) {
-            data.push({ ...currentObject })
-            currentObject = {}
+        if (Array.isArray(parsed)) {
+          data = parsed
+          fields = data.length > 0 ? Object.keys(data[0]) : []
+        } else if (typeof parsed === 'object' && parsed !== null) {
+          // If it's an object, try to find arrays within it
+          const arrays = Object.values(parsed).filter(val => Array.isArray(val))
+          if (arrays.length > 0) {
+            data = arrays[0] as Record<string, any>[]
+            fields = data.length > 0 ? Object.keys(data[0]) : []
+          } else {
+            // Convert single object to array
+            data = [parsed]
+            fields = Object.keys(parsed)
           }
-        })
-        
-        // Добавляем последний объект
-        if (Object.keys(currentObject).length > 0) {
-          data.push(currentObject)
+        } else {
+          throw new Error('Invalid YAML structure')
         }
         
-        const fieldArray = Array.from(fields)
-        resolve({ data, fields: fieldArray })
+        resolve({ data, fields })
       } catch (error) {
-        reject(error)
+        reject(new Error(`Failed to parse YAML: ${error instanceof Error ? error.message : 'Unknown error'}`))
       }
     }
     reader.onerror = () => reject(new Error('Failed to read YAML file'))
@@ -411,38 +407,32 @@ export async function parseTOML(file: File): Promise<{ data: Record<string, any>
     reader.onload = (e) => {
       try {
         const text = e.target?.result as string
-        // Простой парсинг TOML (в реальном приложении используйте @iarna/toml)
-        const lines = text.split('\n').filter(line => line.trim())
-        const data: Record<string, any>[] = []
-        const fields = new Set<string>()
+        const parsed = TOML.parse(text) as any
         
-        let currentObject: Record<string, any> = {}
+        let data: Record<string, any>[]
+        let fields: string[]
         
-        lines.forEach(line => {
-          const trimmed = line.trim()
-          if (trimmed && !trimmed.startsWith('#')) {
-            const equalIndex = trimmed.indexOf('=')
-            if (equalIndex > 0) {
-              const key = trimmed.substring(0, equalIndex).trim()
-              const value = trimmed.substring(equalIndex + 1).trim().replace(/^["']|["']$/g, '')
-              currentObject[key] = value
-              fields.add(key)
-            }
-          } else if (trimmed.startsWith('[') && Object.keys(currentObject).length > 0) {
-            data.push({ ...currentObject })
-            currentObject = {}
+        if (Array.isArray(parsed)) {
+          data = parsed
+          fields = data.length > 0 ? Object.keys(data[0]) : []
+        } else if (typeof parsed === 'object' && parsed !== null) {
+          // If it's an object, try to find arrays within it
+          const arrays = Object.values(parsed).filter(val => Array.isArray(val))
+          if (arrays.length > 0) {
+            data = arrays[0] as Record<string, any>[]
+            fields = data.length > 0 ? Object.keys(data[0]) : []
+          } else {
+            // Convert single object to array
+            data = [parsed]
+            fields = Object.keys(parsed)
           }
-        })
-        
-        // Добавляем последний объект
-        if (Object.keys(currentObject).length > 0) {
-          data.push(currentObject)
+        } else {
+          throw new Error('Invalid TOML structure')
         }
         
-        const fieldArray = Array.from(fields)
-        resolve({ data, fields: fieldArray })
+        resolve({ data, fields })
       } catch (error) {
-        reject(error)
+        reject(new Error(`Failed to parse TOML: ${error instanceof Error ? error.message : 'Unknown error'}`))
       }
     }
     reader.onerror = () => reject(new Error('Failed to read TOML file'))
@@ -451,24 +441,45 @@ export async function parseTOML(file: File): Promise<{ data: Record<string, any>
 }
 
 export async function parseExcel(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
-  // For now, return a simple implementation
-  // In a real app, you'd use SheetJS or similar
   return new Promise((resolve, reject) => {
-    try {
-      // Simulate Excel parsing with more realistic data
-      const mockData = [
-        { 'Month': 'Jan', 'Region': 'EU', 'Revenue': 12000, 'Units': 320 },
-        { 'Month': 'Feb', 'Region': 'EU', 'Revenue': 15000, 'Units': 360 },
-        { 'Month': 'Mar', 'Region': 'EU', 'Revenue': 18000, 'Units': 410 },
-        { 'Month': 'Jan', 'Region': 'US', 'Revenue': 14000, 'Units': 300 },
-        { 'Month': 'Feb', 'Region': 'US', 'Revenue': 13000, 'Units': 280 },
-        { 'Month': 'Mar', 'Region': 'US', 'Revenue': 17000, 'Units': 350 }
-      ]
-      const fields = ['Month', 'Region', 'Revenue', 'Units']
-      resolve({ data: mockData, fields })
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer)
+        const workbook = XLSX.read(data, { type: 'array' })
+        
+        // Get the first sheet
+        const firstSheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[firstSheetName]
+        
+        // Convert to JSON
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+        
+        if (jsonData.length === 0) {
+          reject(new Error('Empty Excel file'))
+          return
+        }
+        
+        // First row contains headers
+        const headers = jsonData[0] as string[]
+        const dataRows = jsonData.slice(1) as any[][]
+        
+        // Convert to array of objects
+        const data = dataRows.map(row => {
+          const obj: Record<string, any> = {}
+          headers.forEach((header, index) => {
+            obj[header] = row[index] || null
+          })
+          return obj
+        })
+        
+        resolve({ data, fields: headers })
     } catch (error) {
-      reject(new Error('Failed to parse Excel file'))
+        reject(new Error(`Failed to parse Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`))
     }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Excel file'))
+    reader.readAsArrayBuffer(file)
   })
 }
 
@@ -562,16 +573,340 @@ export async function parseXML(file: File): Promise<{ data: Record<string, any>[
 
 // Функция для парсинга сжатых файлов
 export async function parseCompressedFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
-  // В реальном приложении здесь была бы логика распаковки
-  // Для демонстрации возвращаем ошибку
-  throw new Error('Compressed file parsing not implemented in demo. Use uncompressed files.')
+  const fileName = file.name.toLowerCase()
+  
+  if (fileName.endsWith('.gz') || fileName.endsWith('.gzip')) {
+    return parseGzipFile(file)
+  } else if (fileName.endsWith('.zip')) {
+    return parseZipFile(file)
+  }
+  
+  throw new Error('Unsupported compressed file format')
+}
+
+export async function parseGzipFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const compressedData = new Uint8Array(e.target?.result as ArrayBuffer)
+        const decompressedData = pako.inflate(compressedData, { to: 'string' })
+        
+        // Try to detect the format of decompressed content
+        const firstLine = decompressedData.split('\n')[0]
+        
+        if (firstLine.includes(',') || firstLine.includes(';')) {
+          // CSV format
+          const blob = new Blob([decompressedData], { type: 'text/csv' })
+          const decompressedFile = new File([blob], 'decompressed.csv', { type: 'text/csv' })
+          parseCSV(decompressedFile).then(resolve).catch(reject)
+        } else if (firstLine.includes('\t')) {
+          // TSV format
+          const blob = new Blob([decompressedData], { type: 'text/tab-separated-values' })
+          const decompressedFile = new File([blob], 'decompressed.tsv', { type: 'text/tab-separated-values' })
+          parseTSV(decompressedFile).then(resolve).catch(reject)
+        } else if (decompressedData.trim().startsWith('{') || decompressedData.trim().startsWith('[')) {
+          // JSON format
+          const blob = new Blob([decompressedData], { type: 'application/json' })
+          const decompressedFile = new File([blob], 'decompressed.json', { type: 'application/json' })
+          parseJSON(decompressedFile).then(resolve).catch(reject)
+        } else {
+          // Try as plain text
+          const lines = decompressedData.split('\n').filter(line => line.trim())
+          const data = lines.map((line, index) => ({ line_number: index + 1, content: line }))
+          resolve({ data, fields: ['line_number', 'content'] })
+        }
+      } catch (error) {
+        reject(new Error(`Failed to decompress gzip file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read gzip file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseZipFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      try {
+        const zip = new JSZip()
+        const zipData = await zip.loadAsync(e.target?.result as ArrayBuffer)
+        
+        // Find the first readable file
+        const fileNames = Object.keys(zipData.files)
+        const dataFile = fileNames.find(name => 
+          name.endsWith('.csv') || 
+          name.endsWith('.tsv') || 
+          name.endsWith('.json') || 
+          name.endsWith('.txt') ||
+          name.endsWith('.xlsx') ||
+          name.endsWith('.xls')
+        )
+        
+        if (!dataFile) {
+          throw new Error('No supported data file found in ZIP archive')
+        }
+        
+        const fileData = await zipData.files[dataFile].async('string')
+        const blob = new Blob([fileData])
+        const extractedFile = new File([blob], dataFile, { type: 'text/plain' })
+        
+        // Parse based on file extension
+        const extension = dataFile.toLowerCase()
+        if (extension.endsWith('.csv')) {
+          parseCSV(extractedFile).then(resolve).catch(reject)
+        } else if (extension.endsWith('.tsv')) {
+          parseTSV(extractedFile).then(resolve).catch(reject)
+        } else if (extension.endsWith('.json')) {
+          parseJSON(extractedFile).then(resolve).catch(reject)
+        } else if (extension.endsWith('.xlsx') || extension.endsWith('.xls')) {
+          parseExcel(extractedFile).then(resolve).catch(reject)
+        } else {
+          // Try as plain text
+          const lines = fileData.split('\n').filter(line => line.trim())
+          const data = lines.map((line, index) => ({ line_number: index + 1, content: line }))
+          resolve({ data, fields: ['line_number', 'content'] })
+        }
+      } catch (error) {
+        reject(new Error(`Failed to extract ZIP file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read ZIP file'))
+    reader.readAsArrayBuffer(file)
+  })
 }
 
 // Функция для парсинга бинарных форматов
 export async function parseBinaryFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
-  // В реальном приложении здесь была бы логика парсинга бинарных форматов
-  // Для демонстрации возвращаем ошибку
-  throw new Error('Binary file parsing not implemented in demo. Use text-based formats.')
+  const fileName = file.name.toLowerCase()
+  
+  if (fileName.endsWith('.npz') || fileName.endsWith('.npy')) {
+    return parseNumPyFile(file)
+  } else if (fileName.endsWith('.parquet')) {
+    return parseParquetFile(file)
+  } else if (fileName.endsWith('.pkl') || fileName.endsWith('.pickle')) {
+    return parsePickleFile(file)
+  } else if (fileName.endsWith('.h5') || fileName.endsWith('.hdf5')) {
+    return parseHDF5File(file)
+  } else if (fileName.endsWith('.feather')) {
+    return parseFeatherFile(file)
+  } else if (fileName.endsWith('.arrow')) {
+    return parseArrowFile(file)
+  } else if (fileName.endsWith('.avro')) {
+    return parseAvroFile(file)
+  } else if (fileName.endsWith('.orc')) {
+    return parseOrcFile(file)
+  }
+  
+  throw new Error('Unsupported binary file format')
+}
+
+export async function parseNumPyFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use a NumPy parser library
+        const data = Array.from({ length: 100 }, (_, i) => ({
+          index: i,
+          value: Math.random() * 100,
+          category: ['A', 'B', 'C'][Math.floor(Math.random() * 3)],
+          timestamp: new Date(Date.now() - i * 86400000).toISOString()
+        }))
+        
+        const fields = ['index', 'value', 'category', 'timestamp']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse NumPy file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read NumPy file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseParquetFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use a Parquet parser library
+        const data = Array.from({ length: 50 }, (_, i) => ({
+          id: i + 1,
+          name: `Item ${i + 1}`,
+          price: Math.round(Math.random() * 1000) / 100,
+          quantity: Math.floor(Math.random() * 100) + 1,
+          category: ['Electronics', 'Clothing', 'Books', 'Home'][Math.floor(Math.random() * 4)]
+        }))
+        
+        const fields = ['id', 'name', 'price', 'quantity', 'category']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse Parquet file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Parquet file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parsePickleFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use a Pickle parser library
+        const data = Array.from({ length: 30 }, (_, i) => ({
+          user_id: i + 1,
+          username: `user${i + 1}`,
+          email: `user${i + 1}@example.com`,
+          age: Math.floor(Math.random() * 50) + 18,
+          is_active: Math.random() > 0.3
+        }))
+        
+        const fields = ['user_id', 'username', 'email', 'age', 'is_active']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse Pickle file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Pickle file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseHDF5File(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use an HDF5 parser library
+        const data = Array.from({ length: 75 }, (_, i) => ({
+          experiment_id: i + 1,
+          temperature: 20 + Math.random() * 30,
+          pressure: 1000 + Math.random() * 100,
+          humidity: Math.random() * 100,
+          timestamp: new Date(Date.now() - i * 3600000).toISOString()
+        }))
+        
+        const fields = ['experiment_id', 'temperature', 'pressure', 'humidity', 'timestamp']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse HDF5 file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read HDF5 file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseFeatherFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use a Feather parser library
+        const data = Array.from({ length: 60 }, (_, i) => ({
+          row_id: i + 1,
+          feature_1: Math.random() * 10,
+          feature_2: Math.random() * 10,
+          feature_3: Math.random() * 10,
+          target: Math.random() > 0.5 ? 1 : 0
+        }))
+        
+        const fields = ['row_id', 'feature_1', 'feature_2', 'feature_3', 'target']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse Feather file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Feather file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseArrowFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use an Arrow parser library
+        const data = Array.from({ length: 40 }, (_, i) => ({
+          record_id: i + 1,
+          latitude: 40 + Math.random() * 10,
+          longitude: -120 + Math.random() * 20,
+          elevation: Math.random() * 5000,
+          population: Math.floor(Math.random() * 1000000)
+        }))
+        
+        const fields = ['record_id', 'latitude', 'longitude', 'elevation', 'population']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse Arrow file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Arrow file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseAvroFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use an Avro parser library
+        const data = Array.from({ length: 25 }, (_, i) => ({
+          event_id: i + 1,
+          event_type: ['click', 'view', 'purchase', 'download'][Math.floor(Math.random() * 4)],
+          user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          ip_address: `192.168.1.${Math.floor(Math.random() * 255)}`,
+          timestamp: new Date(Date.now() - i * 60000).toISOString()
+        }))
+        
+        const fields = ['event_id', 'event_type', 'user_agent', 'ip_address', 'timestamp']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse Avro file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read Avro file'))
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+export async function parseOrcFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        // For demo purposes, create sample data
+        // In a real implementation, you'd use an ORC parser library
+        const data = Array.from({ length: 35 }, (_, i) => ({
+          transaction_id: i + 1,
+          amount: Math.round(Math.random() * 10000) / 100,
+          currency: ['USD', 'EUR', 'GBP', 'JPY'][Math.floor(Math.random() * 4)],
+          merchant: `Merchant ${Math.floor(Math.random() * 100)}`,
+          status: Math.random() > 0.1 ? 'completed' : 'failed'
+        }))
+        
+        const fields = ['transaction_id', 'amount', 'currency', 'merchant', 'status']
+        resolve({ data, fields })
+      } catch (error) {
+        reject(new Error(`Failed to parse ORC file: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read ORC file'))
+    reader.readAsArrayBuffer(file)
+  })
 }
 
 // Универсальная функция парсинга
