@@ -11,7 +11,6 @@ import {
   Grid3X3,
   BookOpen
 } from 'lucide-react'
-import { ThemeToggle } from './ThemeToggle'
 import { LanguageToggle } from './LanguageToggle'
 
 export function Navigation() {
@@ -25,14 +24,14 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700" suppressHydrationWarning>
+    <nav className="bg-white border-b border-gray-200" suppressHydrationWarning>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and main navigation */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
+              <BarChart3 className="h-8 w-8 text-blue-600" />
+              <span className="text-xl font-bold text-gray-900">
                 DataViz Playground
               </span>
             </Link>
@@ -45,7 +44,7 @@ export function Navigation() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >
                     <Icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -57,9 +56,8 @@ export function Navigation() {
 
           {/* Right side controls */}
           <div className="flex items-center space-x-4">
-            {/* Theme and Language toggles */}
+            {/* Language toggle */}
             <div className="hidden md:flex items-center space-x-2">
-              <ThemeToggle />
               <LanguageToggle />
             </div>
 
@@ -68,7 +66,7 @@ export function Navigation() {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               <Github className="h-5 w-5" />
             </a>
@@ -76,7 +74,7 @@ export function Navigation() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
