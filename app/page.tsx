@@ -209,12 +209,12 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Charts Created</span>
-                      <span className="font-semibold text-blue-600">{createdCharts.length}</span>
+                      <span className="text-sm text-muted-foreground">Charts Created</span>
+                      <span className="font-semibold text-primary">{createdCharts.length}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Last Created</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">Last Created</span>
+                      <span className="text-sm text-muted-foreground">
                         {(() => {
                           const lastChart = createdCharts[createdCharts.length - 1]
                           if (lastChart?.createdAt) {
@@ -248,23 +248,23 @@ export default function HomePage() {
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-t border-gray-200 dark:border-gray-700 mt-16 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               📁 Підтримувані формати файлів
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Наша платформа підтримує <strong>20+ форматів файлів</strong> для візуалізації даних. 
               Від простих текстових форматів до складних бінарних структур.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Text Formats */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center mb-4">
-                <FileText className="h-6 w-6 text-blue-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Текстові формати</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Text Formats */}
+              <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                <div className="flex items-center mb-4">
+                  <FileText className="h-6 w-6 text-primary mr-3" />
+                  <h3 className="text-lg font-semibold text-foreground">Текстові формати</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>• CSV/TSV (.csv, .tsv, .tab)</li>
                 <li>• JSON/JSON-LD (.json, .jsonld)</li>
                 <li>• XML (.xml)</li>
@@ -275,13 +275,13 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Spreadsheet Formats */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center mb-4">
-                <BarChart3 className="h-6 w-6 text-green-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Електронні таблиці</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                          {/* Spreadsheet Formats */}
+              <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                <div className="flex items-center mb-4">
+                  <BarChart3 className="h-6 w-6 text-success-600 mr-3" />
+                  <h3 className="text-lg font-semibold text-foreground">Електронні таблиці</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>• Excel (.xlsx, .xls, .xlsm)</li>
                 <li>• Google Sheets (через CSV)</li>
                 <li>• LibreOffice Calc</li>
@@ -289,13 +289,13 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Data Science Formats */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center mb-4">
-                <Database className="h-6 w-6 text-purple-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Data Science</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                          {/* Data Science Formats */}
+              <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                <div className="flex items-center mb-4">
+                  <Database className="h-6 w-6 text-info-600 mr-3" />
+                  <h3 className="text-lg font-semibold text-foreground">Data Science</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>• Parquet (.parquet)</li>
                 <li>• NumPy (.npz, .npy)</li>
                 <li>• Pickle (.pkl, .pickle)</li>
@@ -307,13 +307,13 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Compressed Formats */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center mb-4">
-                <Zap className="h-6 w-6 text-orange-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Стиснені формати</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                          {/* Compressed Formats */}
+              <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                <div className="flex items-center mb-4">
+                  <Zap className="h-6 w-6 text-warning-600 mr-3" />
+                  <h3 className="text-lg font-semibold text-foreground">Стиснені формати</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>• GZIP (.gz, .gzip)</li>
                 <li>• ZIP (.zip)</li>
                 <li>• Автоматичне розпакування</li>
@@ -327,7 +327,7 @@ export default function HomePage() {
               variant="outline"
               size="lg"
               onClick={() => window.open('./FORMATS.md', '_blank')}
-              className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="bg-card hover:bg-muted"
             >
               <BookOpen className="h-5 w-5 mr-2" />
               Детальна документація
@@ -337,49 +337,49 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 transition-all duration-300">
+      <div className="bg-background/80 backdrop-blur-sm border-t border-border transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               🚀 Why Choose DataViz AI Playground?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8">
               <div className="text-center">
-                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Brain className="h-8 w-8 text-blue-600" />
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Brain className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI-Powered Analysis</h3>
-                <p className="text-gray-600 dark:text-gray-300">
+                <h3 className="text-lg font-semibold text-foreground mb-2">AI-Powered Analysis</h3>
+                <p className="text-muted-foreground">
                   Intelligent data analysis with automatic chart recommendations and statistical insights.
                 </p>
               </div>
               
               <div className="text-center">
-                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Database className="h-8 w-8 text-green-600" />
+                <div className="bg-success/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Database className="h-8 w-8 text-success-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Universal Format Support</h3>
-                <p className="text-gray-600 dark:text-gray-300">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Universal Format Support</h3>
+                <p className="text-muted-foreground">
                   Import from CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, and more.
                 </p>
               </div>
               
               <div className="text-center">
-                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Download className="h-8 w-8 text-purple-600" />
+                <div className="bg-info/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Download className="h-8 w-8 text-info-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Code Export</h3>
-                <p className="text-gray-600 dark:text-gray-300">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Code Export</h3>
+                <p className="text-muted-foreground">
                   Export visualizations as production-ready Python (Plotly, Matplotlib) or R (ggplot2, Plotly) code.
                 </p>
               </div>
               
               <div className="text-center">
-                <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="h-8 w-8 text-orange-600" />
+                <div className="bg-warning/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="h-8 w-8 text-warning-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advanced Charts</h3>
-                <p className="text-gray-600 dark:text-gray-300">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Advanced Charts</h3>
+                <p className="text-muted-foreground">
                   16+ chart types including histograms, heatmaps, radar charts, and more with interactive features.
                 </p>
               </div>

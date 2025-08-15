@@ -340,7 +340,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
           </div>
           <div className="flex items-center gap-1">
             {isCollapsed ? (
-              <MessageSquare className="h-4 w-4 text-gray-400" />
+                              <MessageSquare className="h-4 w-4 text-muted-foreground" />
             ) : (
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             )}
@@ -389,7 +389,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                 <div
                   className={`max-w-[85%] rounded-lg p-2 text-sm ${
                     message.type === 'user'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
                   }`}
                 >

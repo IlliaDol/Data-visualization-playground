@@ -427,7 +427,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
         <CardContent className="space-y-4">
           {/* User Prompt */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-white">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
               Что вы хотите проанализировать?
             </label>
             <textarea
@@ -440,7 +440,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
 • Порівняй категорії
 • Покажи пропорції
 • Автоматичний аналіз (оставьте пустым)"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
               rows={4}
             />
           </div>
@@ -630,17 +630,17 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
 
           {/* Advanced Details */}
           {showAdvanced && (
-            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                          <div className="bg-muted p-4 rounded-lg">
+                <h4 className="font-medium text-foreground mb-3">
                 Детали анализа данных
               </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <h5 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <h5 className="font-medium text-muted-foreground mb-2">
                     Структура данных
                   </h5>
-                  <div className="space-y-1 text-gray-600 dark:text-gray-400">
+                  <div className="space-y-1 text-muted-foreground">
                     <div>Строк: {dataProfile.rowCount}</div>
                     <div>Колонок: {dataProfile.columnCount}</div>
                     <div>Размер: {Math.round(dataProfile.size / 1024)} KB</div>
@@ -648,10 +648,10 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                 </div>
                 
                 <div>
-                  <h5 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <h5 className="font-medium text-muted-foreground mb-2">
                     Типы полей
                   </h5>
-                  <div className="space-y-1 text-gray-600 dark:text-gray-400">
+                  <div className="space-y-1 text-muted-foreground">
                     {dataProfile.fields.map(field => (
                       <div key={field.name}>
                         {field.name}: {field.type} ({field.uniqueValues} уникальных)
