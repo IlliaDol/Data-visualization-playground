@@ -35,7 +35,7 @@ jobs:
     - name: Check Vercel credentials
       id: check-credentials
       run: |
-        if [ -n "${{ secrets.VERCEL_TOKEN }}" ] && [ -n "${{ secrets.VERCEL_ORG_ID }}" ] && [ -n "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+        if [ -n "zq9JrCqHTBt11KwnYlY7nP0p" ] && [ -n "vyi3GBN15FYYSgWLuJ07U1QC" ] && [ -n "prj_Um9Prak6cujX0UW1JLAudiJm4BiA" ]; then
           echo "has_credentials=true" >> $GITHUB_OUTPUT
         else
           echo "has_credentials=false" >> $GITHUB_OUTPUT
@@ -45,9 +45,9 @@ jobs:
       if: steps.check-credentials.outputs.has_credentials == 'true' && github.ref == 'refs/heads/main'
       uses: amondnet/vercel-action@v25
       with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-token: zq9JrCqHTBt11KwnYlY7nP0p
+        vercel-org-id: vyi3GBN15FYYSgWLuJ07U1QC
+        vercel-project-id: prj_Um9Prak6cujX0UW1JLAudiJm4BiA
         vercel-args: '--prod'
         
     - name: Skip deployment
