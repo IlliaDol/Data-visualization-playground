@@ -8,6 +8,7 @@ import { DataProfile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart3, FileText, Share2, Download, Eye, Settings, BookOpen, Brain, Sparkles, Database, Zap } from 'lucide-react'
+import { LanguageToggle } from '@/components/LanguageToggle'
 
 export default function HomePage() {
   const [dataProfile, setDataProfile] = useState<DataProfile | null>(null)
@@ -103,141 +104,142 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
-      {/* Header */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <Brain className="h-8 w-8 text-blue-600" />
-                DataViz AI Playground
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
-                AI-powered data visualization with support for 20+ file formats
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Sparkles className="h-4 w-4" />
-                <span>AI Enhanced</span>
+      <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4" style={{ color: '#1f2937', fontSize: '2.5rem', fontWeight: 'bold' }}>
+              DataViz AI Playground
+            </h1>
+            <p className="text-xl text-gray-600 mb-6" style={{ color: '#4b5563', fontSize: '1.25rem' }}>
+              AI-powered data visualization with support for 20+ file formats
+            </p>
+            
+            {/* Features */}
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="flex items-center gap-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="text-2xl">✨</span>
+                <span className="font-semibold" style={{ fontWeight: '600' }}>AI Enhanced</span>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Database className="h-4 w-4" />
-                <span>20+ Formats</span>
+              <div className="flex items-center gap-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="text-2xl">📊</span>
+                <span className="font-semibold" style={{ fontWeight: '600' }}>20+ Formats</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - File Upload & Chart Builder */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* File Upload */}
-            <FileUpload 
-              onFileProcessed={handleDataUploaded} 
-              onError={handleFileError} 
-            />
-            
-            {/* Chart Builder */}
-            {dataProfile && (
-              <ChartBuilder
-                dataProfile={dataProfile}
-                onChartCreated={handleChartCreated}
-              />
-            )}
+          {/* Language Toggle */}
+          <div className="flex justify-end mb-6">
+            <LanguageToggle />
           </div>
-          
-          {/* Right Column - AI Assistant & Stats */}
-          <div className="space-y-6">
-            <AIAssistant 
-              dataProfile={dataProfile} 
-              onChartSuggestion={handleAIChartSuggestion}
-              onAnalysisComplete={handleAIAnalysisComplete}
-            />
-            
-            {/* AI Analysis Results */}
-            {aiAnalysisResult && (
-              <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2 text-green-900 dark:text-green-100">
-                    <Zap className="h-5 w-5" />
-                    AI Analysis Results
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="text-sm">
-                    <div className="font-medium text-green-800 dark:text-green-200 mb-2">
-                      Recommended Chart: {aiAnalysisResult.chartType.toUpperCase()}
-                    </div>
-                    <div className="text-green-700 dark:text-green-300 space-y-1">
-                      <div>X Field: {aiAnalysisResult.xField || 'Not specified'}</div>
-                      <div>Y Field: {aiAnalysisResult.yField || 'Not specified'}</div>
-                      {aiAnalysisResult.colorField && (
-                        <div>Color: {aiAnalysisResult.colorField}</div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {aiAnalysisResult.insights && aiAnalysisResult.insights.length > 0 && (
+
+          {/* Main Content */}
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* File Upload Section */}
+            <div className="lg:col-span-2">
+              <FileUpload 
+                onFileProcessed={handleDataUploaded} 
+                onError={handleFileError} 
+              />
+              
+              {/* Chart Builder */}
+              {dataProfile && (
+                <ChartBuilder
+                  dataProfile={dataProfile}
+                  onChartCreated={handleChartCreated}
+                />
+              )}
+            </div>
+
+            {/* AI Assistant Section */}
+            <div className="lg:col-span-1">
+              <AIAssistant 
+                dataProfile={dataProfile} 
+                onChartSuggestion={handleAIChartSuggestion}
+                onAnalysisComplete={handleAIAnalysisComplete}
+              />
+              
+              {/* AI Analysis Results */}
+              {aiAnalysisResult && (
+                <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2 text-green-900 dark:text-green-100">
+                      <Zap className="h-5 w-5" />
+                      AI Analysis Results
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
                     <div className="text-sm">
-                      <div className="font-medium text-green-800 dark:text-green-200 mb-1">
-                        Key Insights:
+                      <div className="font-medium text-green-800 dark:text-green-200 mb-2">
+                        Recommended Chart: {aiAnalysisResult.chartType.toUpperCase()}
                       </div>
-                      <ul className="text-green-700 dark:text-green-300 space-y-1">
-                        {aiAnalysisResult.insights.slice(0, 3).map((insight: string, index: number) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="text-green-600">•</span>
-                            {insight}
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="text-green-700 dark:text-green-300 space-y-1">
+                        <div>X Field: {aiAnalysisResult.xField || 'Not specified'}</div>
+                        <div>Y Field: {aiAnalysisResult.yField || 'Not specified'}</div>
+                        {aiAnalysisResult.colorField && (
+                          <div>Color: {aiAnalysisResult.colorField}</div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-            
-            {/* Quick Stats */}
-            {createdCharts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Your Progress</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Charts Created</span>
-                    <span className="font-semibold text-blue-600">{createdCharts.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Last Created</span>
-                    <span className="text-sm text-gray-500">
-                      {(() => {
-                        const lastChart = createdCharts[createdCharts.length - 1]
-                        if (lastChart?.createdAt) {
-                          const date = lastChart.createdAt instanceof Date ? lastChart.createdAt : new Date(lastChart.createdAt)
-                          return date.toLocaleDateString()
-                        }
-                        return 'N/A'
-                      })()}
-                    </span>
-                  </div>
-                  <div className="pt-2 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.location.href = './dashboards'}
-                      className="w-full"
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View All Charts
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                    
+                    {aiAnalysisResult.insights && aiAnalysisResult.insights.length > 0 && (
+                      <div className="text-sm">
+                        <div className="font-medium text-green-800 dark:text-green-200 mb-1">
+                          Key Insights:
+                        </div>
+                        <ul className="text-green-700 dark:text-green-300 space-y-1">
+                          {aiAnalysisResult.insights.slice(0, 3).map((insight: string, index: number) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <span className="text-green-600">•</span>
+                              {insight}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Quick Stats */}
+              {createdCharts.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Your Progress</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Charts Created</span>
+                      <span className="font-semibold text-blue-600">{createdCharts.length}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Last Created</span>
+                      <span className="text-sm text-gray-500">
+                        {(() => {
+                          const lastChart = createdCharts[createdCharts.length - 1]
+                          if (lastChart?.createdAt) {
+                            const date = lastChart.createdAt instanceof Date ? lastChart.createdAt : new Date(lastChart.createdAt)
+                            return date.toLocaleDateString()
+                          }
+                          return 'N/A'
+                        })()}
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.location.href = './dashboards'}
+                        className="w-full"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View All Charts
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
       </div>
