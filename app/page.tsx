@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart3, FileText, Share2, Download, Eye, Settings, BookOpen, Brain, Sparkles, Database, Zap } from 'lucide-react'
 import { LanguageToggle } from '@/components/LanguageToggle'
+import { AIAgent } from '@/components/AIAgent'
 
 export default function HomePage() {
   const [dataProfile, setDataProfile] = useState<DataProfile | null>(null)
@@ -172,6 +173,16 @@ export default function HomePage() {
                 onFileProcessed={handleDataUploaded} 
                 onError={handleFileError} 
               />
+              
+              {dataProfile && (
+                <div className="mt-6">
+                  <AIAgent 
+                    dataProfile={dataProfile as any}
+                    onChartSuggestion={handleAIChartSuggestion}
+                    onAnalysisComplete={handleAIAnalysisComplete}
+                  />
+                </div>
+              )}
               
               {/* Data Cleaner */}
               {dataProfile && rawData.length > 0 && (
