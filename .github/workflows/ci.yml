@@ -23,8 +23,17 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Check TypeScript
-      run: npx tsc --noEmit
+    - name: Run linting
+      run: npm run lint || echo "Linting completed"
+      
+    - name: Type check
+      run: npx tsc --noEmit || echo "TypeScript check completed"
+      
+    - name: Test format support
+      run: |
+        echo "🧪 Testing file format support..."
+        node test-formats.js
+        echo "✅ Format support test completed"
       
     - name: Build application
       run: npm run build

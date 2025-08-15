@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react'
 import { Sun, Moon, Monitor, Sparkles, Check, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTheme } from 'next-themes'
 
-type Theme = 'light' | 'dark' | 'auto'
+type Theme = 'light' | 'dark' | 'system'
 
 const themeInfo = {
   light: {
@@ -21,7 +22,7 @@ const themeInfo = {
     features: ['Зменшена втома очей', 'Нічне використання', 'Економія батареї'],
     color: 'text-blue-400'
   },
-  auto: {
+  system: {
     name: 'Auto',
     icon: Monitor,
     description: 'Автоматична',
@@ -31,62 +32,14 @@ const themeInfo = {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('auto')
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState<'top' | 'bottom'>('top')
 
-  const applyTheme = (newTheme: Theme) => {
-    if (typeof window === 'undefined') return
-    
-    const root = document.documentElement
-    
-    // Видаляємо всі класи тем
-    root.classList.remove('light', 'dark')
-    
-    if (newTheme === 'auto') {
-      // Автоматичний режим - використовуємо системні налаштування
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if (prefersDark) {
-        root.classList.add('dark')
-      } else {
-        root.classList.add('light')
-      }
-    } else {
-      // Ручний режим
-      root.classList.add(newTheme)
-    }
-    
-    localStorage.setItem('theme', newTheme)
-  }
-
   useEffect(() => {
     setMounted(true)
-    
-    // Завантажуємо збережену тему
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme | null
-      const initialTheme = savedTheme || 'auto'
-      setTheme(initialTheme)
-      applyTheme(initialTheme)
-    }
   }, [])
-
-  // Слухаємо зміни системної теми
-  useEffect(() => {
-    if (!mounted || typeof window === 'undefined') return
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
-    const handleChange = () => {
-      if (theme === 'auto') {
-        applyTheme('auto')
-      }
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, mounted])
 
   if (!mounted) {
     return (
@@ -102,28 +55,20 @@ export function ThemeToggle() {
   }
 
   const cycleTheme = () => {
-    const themes: Theme[] = ['light', 'dark', 'auto']
-    const currentIndex = themes.indexOf(theme)
+    const themes: Theme[] = ['light', 'dark', 'system']
+    const currentIndex = themes.indexOf(theme as Theme)
     const nextIndex = (currentIndex + 1) % themes.length
     const newTheme = themes[nextIndex]
     
     setTheme(newTheme)
-    applyTheme(newTheme)
   }
 
   const getCurrentEffectiveTheme = (): 'light' | 'dark' => {
-    if (theme === 'auto') {
-      if (typeof window !== 'undefined' && mounted) {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      }
-      return 'light' // fallback для серверного рендерингу
-    }
-    return theme
+    return resolvedTheme || 'light'
   }
 
   const getIcon = () => {
-    const effectiveTheme = getCurrentEffectiveTheme()
-    const currentInfo = themeInfo[theme]
+    const currentInfo = themeInfo[theme as Theme] || themeInfo.system
     const Icon = currentInfo.icon
     
     return <Icon className="h-4 w-4" />
@@ -132,31 +77,26 @@ export function ThemeToggle() {
   const getLabel = () => {
     if (!mounted) return 'Loading...'
     
-    const effectiveTheme = getCurrentEffectiveTheme()
-    const currentInfo = themeInfo[theme]
+    const currentInfo = themeInfo[theme as Theme] || themeInfo.system
     
-    if (theme === 'auto') {
-      return `${currentInfo.name} (${effectiveTheme === 'light' ? '☀️ Light' : '🌙 Dark'})`
+    if (theme === 'system') {
+      return `${currentInfo.name} (${getCurrentEffectiveTheme() === 'light' ? '☀️ Light' : '🌙 Dark'})`
     }
     
     return `${currentInfo.name} Theme`
   }
 
-  const getCurrentInfo = () => themeInfo[theme]
+  const getCurrentInfo = () => themeInfo[theme as Theme] || themeInfo.system
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     if (typeof window === 'undefined') return
     
     const rect = e.currentTarget.getBoundingClientRect()
     const tooltipHeight = 40 // Приблизна висота tooltip
-    const tooltipWidth = 200 // Приблизна ширина tooltip
-    const spaceAbove = rect.top
     const spaceBelow = window.innerHeight - rect.bottom
-    const spaceLeft = rect.left
-    const spaceRight = window.innerWidth - rect.right
     
-    // Якщо місця зверху менше ніж знизу, показуємо tooltip знизу
-    if (spaceAbove < tooltipHeight + 10 && spaceBelow > tooltipHeight + 10) {
+    // Якщо місця знизу більше ніж зверху, показуємо tooltip знизу
+    if (spaceBelow > tooltipHeight + 10) {
       setTooltipPosition('bottom')
     } else {
       setTooltipPosition('top')
@@ -211,7 +151,7 @@ export function ThemeToggle() {
 
           {/* Theme Options */}
           <div className="p-3 space-y-2">
-            {(['light', 'dark', 'auto'] as Theme[]).map((themeOption) => {
+            {(['light', 'dark', 'system'] as Theme[]).map((themeOption) => {
               const info = themeInfo[themeOption]
               const Icon = info.icon
               const isActive = theme === themeOption
@@ -221,7 +161,6 @@ export function ThemeToggle() {
                   key={themeOption}
                   onClick={() => {
                     setTheme(themeOption)
-                    applyTheme(themeOption)
                     setShowDetails(false)
                   }}
                   className={`w-full p-3 rounded-lg text-left transition-all duration-200 group ${
@@ -278,7 +217,7 @@ export function ThemeToggle() {
               <div className="flex items-center justify-between">
                 <span>Режим:</span>
                 <span className="font-medium">
-                  {theme === 'auto' ? '🔄 Автоматичний' : '🎯 Ручний'}
+                  {theme === 'system' ? '🔄 Автоматичний' : '🎯 Ручний'}
                 </span>
               </div>
             </div>

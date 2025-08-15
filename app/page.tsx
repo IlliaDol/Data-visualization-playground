@@ -103,15 +103,15 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
-      <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted transition-all duration-300">
+      <div className="container mx-auto px-4 py-8" style={{ minHeight: '100vh' }}>
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4" style={{ color: '#1f2937', fontSize: '2.5rem', fontWeight: 'bold' }}>
+            <h1 className="text-4xl font-bold text-foreground mb-4" style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>
               DataViz AI Playground
             </h1>
-            <p className="text-xl text-gray-600 mb-6" style={{ color: '#4b5563', fontSize: '1.25rem' }}>
+            <p className="text-xl text-muted-foreground mb-6" style={{ fontSize: '1.25rem' }}>
               AI-powered data visualization with support for 20+ file formats
             </p>
             
