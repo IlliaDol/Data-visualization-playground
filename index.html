@@ -47,6 +47,22 @@
         </div>
       </div>
 
+      <!-- AI Insights (Local) -->
+      <div id="aiInsightsCard" class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hidden">
+        <div class="p-4 border-b border-zinc-200 dark:border-zinc-800">
+          <h2 class="font-semibold">AI Analysis</h2>
+          <p class="text-xs text-zinc-500 mt-1">Automatic local analysis of your data with insights and chart suggestions.</p>
+        </div>
+        <div class="p-4 space-y-3 text-sm">
+          <div id="analysisSummary" class="text-xs text-zinc-500"></div>
+          <ul id="insightsList" class="list-disc pl-5 space-y-1"></ul>
+          <div>
+            <h3 class="font-medium mt-2 mb-1">Suggested charts</h3>
+            <div id="suggestedCharts" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Chart settings card -->
       <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
         <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
@@ -152,9 +168,33 @@
   // ===== Utilities =====
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
+ 
   const CHART_TYPES = ["line","bar","scatter","bubble","pie","doughnut","radar","polarArea"];
-
+  const CHART_TYPE_LABELS = {
+    line: 'Line',
+    bar: 'Bar',
+    scatter: 'Scatter',
+    bubble: 'Bubble',
+    pie: 'Pie',
+    doughnut: 'Doughnut',
+    radar: 'Radar',
+    polarArea: 'Polar Area'
+  };
+  function populateChartTypeOptions() {
+    if (!chartTypeSel) return;
+    chartTypeSel.innerHTML = CHART_TYPES.map(t=>`<option value="${t}">${CHART_TYPE_LABELS[t]||t}</option>`).join('');
+  }
+  function registerChartType(type, label) {
+    if (!type || CHART_TYPES.includes(type)) return;
+    CHART_TYPES.push(type);
+    if (label) CHART_TYPE_LABELS[type] = label;
+    populateChartTypeOptions();
+  }
+  // Expose registry for plugins
+  window.registerChartType = registerChartType;
+  window.availableChartTypes = CHART_TYPES;
+  window.availableChartTypeLabels = CHART_TYPE_LABELS;
+ 
   const nicePalette = () => {
     const count = 12;
     const arr = [];
@@ -257,6 +297,11 @@
   const loadSampleBtn = $('#loadSampleBtn');
   const runTestsBtn = $('#runTests');
   const testLog = $('#testLog');
+  const aiInsightsCard = $('#aiInsightsCard');
+  const analysisSummary = $('#analysisSummary');
+  const insightsList = $('#insightsList');
+  const suggestedCharts = $('#suggestedCharts');
+  populateChartTypeOptions();
 
   // ===== Theme toggle =====
   themeBtn.addEventListener('click', () => {
@@ -331,6 +376,7 @@
     numericCols.slice(0,2).forEach(c => { const opt = Array.from(ySel.options).find(o=>o.value===c); if (opt) opt.selected = true; });
     // Create color pickers for chosen Y
     rebuildColorPickers();
+    runLocalAnalysisAndRender();
   }
 
   function buildPreview(rows) {
@@ -346,6 +392,164 @@
     previewDiv.innerHTML = html;
     previewDiv.classList.remove('hidden');
   }
+
+  // ===== Local AI analysis (no external API) =====
+  const externalAnalyzers = [];
+  window.registerAnalyzer = function(fn) { if (typeof fn === 'function') externalAnalyzers.push(fn); };
+  function runLocalAnalysisAndRender() {
+    if (!rawRows.length) return;
+    const cols = Object.keys(rawRows[0] || {});
+    const { numericCols, categoricalCols, dateCols } = classifyColumns(rawRows);
+    const insights = [];
+    const suggestions = [];
+    const addInsight = (text) => { if (text) insights.push(String(text)); };
+    const addSuggestion = (label, plan) => { if (label && plan) suggestions.push({ label, plan }); };
+
+    // Summary
+    analysisSummary.textContent = `Rows: ${rawRows.length}, Columns: ${cols.length} — numeric: ${numericCols.length}, categorical: ${categoricalCols.length}${dateCols.length ? `, date-like: ${dateCols.length}` : ''}`;
+
+    // Category distributions (top 3)
+    for (const c of categoricalCols.slice(0, 4)) {
+      const dist = frequency(rawRows.map(r => String(r[c])));
+      const top = Object.entries(dist).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      if (top.length) addInsight(`Column "${c}": top categories — ${top.map(([k,v])=>`${k} (${v})`).join(', ')}`);
+      if (numericCols.length) addSuggestion(`Bar — sum of ${numericCols[0]} by ${c}`, { chartType: 'bar', x: c, y: [numericCols[0]], aggregate: 'sum', parseXAsTime: false });
+    }
+
+    // Numeric stats and outliers
+    for (const n of numericCols.slice(0, 6)) {
+      const values = rawRows.map(r => coerceNumber(r[n])).filter(Number.isFinite);
+      if (!values.length) continue;
+      const { mean, std, min, max } = stats(values);
+      addInsight(`Column "${n}": mean ${round(mean)}, std ${round(std)}, min ${round(min)}, max ${round(max)}`);
+      const outCount = zScoreOutliers(values, 3).length;
+      if (outCount) addInsight(`Column "${n}": ${outCount} outlier(s) detected (|z| > 3)`);
+    }
+
+    // Missing values per column
+    for (const c of cols) {
+      const total = rawRows.length;
+      const missing = rawRows.filter(r => r[c] === '' || r[c] === null || r[c] === undefined).length;
+      if (missing) addInsight(`Column "${c}": missing ${missing}/${total} (${round(100*missing/total)}%)`);
+    }
+
+    // Correlations
+    const strongPairs = [];
+    for (let i=0;i<numericCols.length;i++) {
+      for (let j=i+1;j<numericCols.length;j++) {
+        const a = numericCols[i], b = numericCols[j];
+        const pairs = rawRows.map(r => [coerceNumber(r[a]), coerceNumber(r[b])]).filter(([x,y])=>Number.isFinite(x)&&Number.isFinite(y));
+        if (pairs.length < 10) continue;
+        const r = pearson(pairs.map(p=>p[0]), pairs.map(p=>p[1]));
+        if (Number.isFinite(r) && Math.abs(r) >= 0.6) {
+          strongPairs.push({ a, b, r });
+          addSuggestion(`Scatter — ${a} vs ${b} (r=${round(r)})`, { chartType: 'scatter', x: a, y: [b], aggregate: 'none', parseXAsTime: false });
+        }
+      }
+    }
+    if (strongPairs.length) addInsight(`Strong correlations: ${strongPairs.map(p=>`${p.a}~${p.b} (r=${round(p.r)})`).join('; ')}`);
+
+    // Time trends
+    if (dateCols.length && numericCols.length) {
+      const x = dateCols[0];
+      const y = numericCols[0];
+      const series = rawRows
+        .map(r => ({ t: Date.parse(r[x]), v: coerceNumber(r[y]) }))
+        .filter(p => Number.isFinite(p.t) && Number.isFinite(p.v))
+        .sort((a,b)=>a.t-b.t);
+      if (series.length >= 3) {
+        const idx = series.map((_,i)=>i);
+        const val = series.map(p=>p.v);
+        const r = pearson(idx, val);
+        if (Number.isFinite(r)) addInsight(`Trend for ${y} over ${x}: ${r>0?'increasing':'decreasing'} (r=${round(r)})`);
+        suggestions.unshift({ label: `Line — ${y} over ${x}` , plan: { chartType: 'line', x, y: [y], aggregate: 'none', parseXAsTime: true } });
+      }
+    }
+
+    // External analyzers
+    externalAnalyzers.forEach(fn => {
+      try { fn({ rows: rawRows, colTypes, classifyColumns, addInsight, addSuggestion }); } catch(e) { /* ignore */ }
+    });
+
+    // Render insights
+    insightsList.innerHTML = '';
+    insights.forEach(s => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      insightsList.appendChild(li);
+    });
+
+    // Render suggestions
+    suggestedCharts.innerHTML = '';
+    suggestions.slice(0, 5).forEach((sug, idx) => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between gap-2 p-2 rounded border border-zinc-200 dark:border-zinc-800';
+      const btnId = `applyPlan_${Date.now()}_${idx}`;
+      div.innerHTML = `<div class="text-sm">${sug.label}</div><button id="${btnId}" class="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs">Apply</button>`;
+      suggestedCharts.appendChild(div);
+      setTimeout(() => {
+        const btn = document.getElementById(btnId);
+        if (btn) btn.addEventListener('click', () => applyAIPlan(sug.plan));
+      }, 0);
+    });
+
+    aiInsightsCard.classList.remove('hidden');
+  }
+
+  function classifyColumns(rows) {
+    const cols = Object.keys(rows[0] || {});
+    const numericCols = [];
+    const categoricalCols = [];
+    const dateCols = [];
+    for (const c of cols) {
+      const vals = rows.slice(0, 200).map(r => r[c]).filter(v=>v!==''&&v!==null&&v!==undefined);
+      const numFrac = vals.length ? vals.filter(isNumericLike).length / vals.length : 0;
+      const dateFrac = vals.length ? vals.filter(v => Number.isFinite(Date.parse(v))).length / vals.length : 0;
+      if (dateFrac > 0.6) dateCols.push(c);
+      if (numFrac > 0.7) numericCols.push(c); else categoricalCols.push(c);
+    }
+    return { numericCols, categoricalCols, dateCols };
+  }
+
+  function frequency(arr) {
+    const map = Object.create(null);
+    for (const v of arr) map[v] = (map[v]||0)+1;
+    return map;
+  }
+
+  function stats(arr) {
+    const n = arr.length;
+    const mean = arr.reduce((a,b)=>a+b,0) / Math.max(1,n);
+    const variance = n>1 ? arr.reduce((s,v)=>s+(v-mean)*(v-mean),0)/(n-1) : 0;
+    const std = Math.sqrt(variance);
+    const min = Math.min(...arr);
+    const max = Math.max(...arr);
+    return { mean, std, min, max };
+  }
+
+  function zScoreOutliers(arr, threshold=3) {
+    const { mean, std } = stats(arr);
+    if (std === 0) return [];
+    return arr.map((v,i)=>({v,i,z:(v-mean)/std})).filter(p=>Math.abs(p.z) > threshold);
+  }
+
+  function pearson(x, y) {
+    const n = Math.min(x.length, y.length);
+    if (n === 0) return NaN;
+    let sx=0, sy=0, sxx=0, syy=0, sxy=0;
+    for (let i=0;i<n;i++) {
+      const xi = x[i];
+      const yi = y[i];
+      sx += xi; sy += yi;
+      sxx += xi*xi; syy += yi*yi; sxy += xi*yi;
+    }
+    const cov = sxy/n - (sx/n)*(sy/n);
+    const vx = sxx/n - (sx/n)*(sx/n);
+    const vy = syy/n - (sy/n)*(sy/n);
+    return (vx>0 && vy>0) ? cov / Math.sqrt(vx*vy) : NaN;
+  }
+
+  function round(v, d=2) { return Number.isFinite(v) ? Number(v.toFixed(d)) : v; }
 
   // ===== Dynamic color pickers =====
   function rebuildColorPickers() {
