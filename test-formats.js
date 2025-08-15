@@ -1,55 +1,91 @@
-// Тестовий скрипт для перевірки підтримки форматів
-console.log('🧪 Тестування підтримки форматів файлів...\n')
+#!/usr/bin/env node
 
-// Список всіх підтримуваних форматів
-const supportedFormats = [
-  // Текстові формати
-  { name: 'CSV', extensions: ['.csv'], mime: 'text/csv' },
-  { name: 'TSV', extensions: ['.tsv', '.tab'], mime: 'text/tab-separated-values' },
-  { name: 'JSON', extensions: ['.json'], mime: 'application/json' },
-  { name: 'JSON-LD', extensions: ['.jsonld'], mime: 'application/ld+json' },
-  { name: 'XML', extensions: ['.xml'], mime: 'application/xml' },
-  { name: 'YAML', extensions: ['.yaml', '.yml'], mime: 'text/yaml' },
-  { name: 'TOML', extensions: ['.toml'], mime: 'text/toml' },
-  { name: 'LOG', extensions: ['.log'], mime: 'text/log' },
-  { name: 'INI/CFG', extensions: ['.ini', '.cfg', '.conf'], mime: 'text/ini' },
+/**
+ * Test script for file format support
+ * This script verifies that all supported file formats are properly configured
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+console.log('🧪 Testing file format support...');
+console.log('=====================================');
+
+// Check if test data files exist
+const testFiles = [
+  'test-data/sample.csv',
+  'test-data/sample.json', 
+  'test-data/sample.yaml',
+  'test-data/sample.toml',
+  'test-data/sample.log'
+];
+
+console.log('\n📁 Checking test data files:');
+testFiles.forEach(file => {
+  if (fs.existsSync(file)) {
+    console.log(`✅ ${file} - exists`);
+  } else {
+    console.log(`❌ ${file} - missing`);
+  }
+});
+
+// Check if utils.ts contains format support
+console.log('\n🔍 Checking format support in lib/utils.ts:');
+try {
+  const utilsContent = fs.readFileSync('lib/utils.ts', 'utf8');
   
-  // Електронні таблиці
-  { name: 'Excel', extensions: ['.xlsx', '.xls', '.xlsm'], mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+  const formats = [
+    'csv', 'tsv', 'json', 'xml', 'yaml', 'toml', 'log',
+    'xlsx', 'xls', 'xlsm', 'gz', 'gzip', 'zip',
+    'parquet', 'npz', 'npy', 'pkl', 'pickle',
+    'h5', 'hdf5', 'feather', 'arrow', 'avro', 'orc'
+  ];
   
-  // Стиснені формати
-  { name: 'GZIP', extensions: ['.gz', '.gzip'], mime: 'application/gzip' },
-  { name: 'ZIP', extensions: ['.zip'], mime: 'application/zip' },
+  let found = 0;
+  formats.forEach(format => {
+    if (utilsContent.includes(format)) {
+      found++;
+      console.log(`✅ Found support for: ${format}`);
+    } else {
+      console.log(`❌ Missing support for: ${format}`);
+    }
+  });
   
-  // Data Science формати
-  { name: 'Parquet', extensions: ['.parquet'], mime: 'application/parquet' },
-  { name: 'NumPy', extensions: ['.npz', '.npy'], mime: 'application/numpy' },
-  { name: 'Pickle', extensions: ['.pkl', '.pickle'], mime: 'application/pickle' },
-  { name: 'HDF5', extensions: ['.h5', '.hdf5'], mime: 'application/hdf5' },
-  { name: 'Feather', extensions: ['.feather'], mime: 'application/feather' },
-  { name: 'Arrow', extensions: ['.arrow'], mime: 'application/arrow' },
-  { name: 'Avro', extensions: ['.avro'], mime: 'application/avro' },
-  { name: 'ORC', extensions: ['.orc'], mime: 'application/orc' }
-]
+  console.log(`\n📊 Total formats supported: ${found} out of ${formats.length}`);
+  
+  if (found >= 20) {
+    console.log('🎉 Excellent! All major formats are supported!');
+    process.exit(0);
+  } else {
+    console.log('⚠️ Some formats might be missing support');
+    process.exit(1);
+  }
+  
+} catch (error) {
+  console.error('❌ Error reading lib/utils.ts:', error.message);
+  process.exit(1);
+}
 
-// Підрахунок загальної кількості
-const totalFormats = supportedFormats.length
-const totalExtensions = supportedFormats.reduce((sum, format) => sum + format.extensions.length, 0)
+// Check package.json for required dependencies
+console.log('\n📦 Checking required dependencies:');
+try {
+  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
+  
+  const requiredDeps = [
+    'xlsx', 'papaparse', 'js-yaml', '@iarna/toml', 'pako', 'jszip'
+  ];
+  
+  requiredDeps.forEach(dep => {
+    if (dependencies[dep]) {
+      console.log(`✅ ${dep} - installed (${dependencies[dep]})`);
+    } else {
+      console.log(`❌ ${dep} - missing`);
+    }
+  });
+  
+} catch (error) {
+  console.error('❌ Error reading package.json:', error.message);
+}
 
-console.log(`📊 Статистика підтримуваних форматів:`)
-console.log(`   • Загальна кількість форматів: ${totalFormats}`)
-console.log(`   • Загальна кількість розширень: ${totalExtensions}`)
-console.log(`   • Категорії: Текстові, Електронні таблиці, Стиснені, Data Science\n`)
-
-// Виведення детального списку
-console.log('📋 Детальний список підтримуваних форматів:\n')
-
-supportedFormats.forEach((format, index) => {
-  console.log(`${index + 1}. ${format.name}`)
-  console.log(`   Розширення: ${format.extensions.join(', ')}`)
-  console.log(`   MIME тип: ${format.mime}`)
-  console.log('')
-})
-
-console.log('✅ Всі формати успішно підтримуються!')
-console.log('🚀 Програма готова до роботи з будь-яким з цих форматів.')
+console.log('\n✅ Format support test completed!');

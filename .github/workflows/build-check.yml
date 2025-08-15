@@ -26,9 +26,7 @@ jobs:
     - name: Build application
       run: npm run build
       
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-files
-        path: .next/
-        retention-days: 1
+    - name: Success message
+      run: |
+        echo "✅ Build Check: PASSED"
+        echo "🚀 Application builds successfully"
