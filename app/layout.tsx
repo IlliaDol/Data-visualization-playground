@@ -21,17 +21,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navigation />
-          <main className="min-h-screen bg-background text-foreground">
-            {children}
-          </main>
+      <body className={`${inter.className} bg-background text-foreground`}>
+        <ThemeProvider>
+          <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+            <Navigation />
+            <main className="min-h-screen bg-background text-foreground">
+              {children}
+            </main>
+          </div>
         </ThemeProvider>
       </body>
     </html>

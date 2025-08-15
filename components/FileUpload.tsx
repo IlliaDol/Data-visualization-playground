@@ -198,7 +198,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
       case 'error':
         return 'text-red-500'
       default:
-        return 'text-gray-500'
+        return 'text-muted-foreground'
     }
   }
 
@@ -219,13 +219,13 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
               transition-colors duration-200
               ${isDragActive 
                 ? 'border-primary bg-primary/5' 
-                : 'border-gray-300 hover:border-primary hover:bg-gray-50'
+                : 'border-border hover:border-primary hover:bg-muted'
               }
               ${isProcessing ? 'pointer-events-none opacity-50' : ''}
             `}
           >
             <input {...getInputProps()} />
-            <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                          <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             {isDragActive ? (
               <p className="text-lg font-medium text-primary">
                 Drop the files here...
@@ -235,7 +235,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                 <p className="text-lg font-medium mb-2">
                   Drag & drop files here, or click to select
                 </p>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Supports CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, and more formats up to 200MB
                 </p>
                 <Button variant="outline">
@@ -251,35 +251,35 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">CSV/TSV</span>
-                <p className="text-xs text-gray-500">Comma/tab-separated values</p>
+                <p className="text-xs text-muted-foreground">Comma/tab-separated values</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">Excel</span>
-                <p className="text-xs text-gray-500">.xlsx, .xls, .xlsm files</p>
+                <p className="text-xs text-muted-foreground">.xlsx, .xls, .xlsm files</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">JSON/XML</span>
-                <p className="text-xs text-gray-500">Structured data formats</p>
+                <p className="text-xs text-muted-foreground">Structured data formats</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">YAML/TOML</span>
-                <p className="text-xs text-gray-500">Configuration files</p>
+                <p className="text-xs text-muted-foreground">Configuration files</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">LOG</span>
-                <p className="text-xs text-gray-500">Log files</p>
+                <p className="text-xs text-muted-foreground">Log files</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">Parquet</span>
-                <p className="text-xs text-gray-500">Columnar data format</p>
+                <p className="text-xs text-muted-foreground">Columnar data format</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">NumPy</span>
-                <p className="text-xs text-gray-500">.npz, .npy files</p>
+                <p className="text-xs text-muted-foreground">.npz, .npy files</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">Compressed</span>
-                <p className="text-xs text-gray-500">.gz, .zip files</p>
+                <p className="text-xs text-muted-foreground">.gz, .zip files</p>
               </div>
             </div>
           </div>
@@ -303,7 +303,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                     {getStatusIcon(upload.status)}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{upload.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         {formatFileSize(upload.size)}
                       </p>
                     </div>
@@ -354,7 +354,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                 <div key={upload.id} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium">{upload.name}</h4>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-muted-foreground">
                       {upload.dataProfile?.rowCount} rows × {upload.dataProfile?.columnCount} columns
                     </span>
                   </div>
@@ -364,7 +364,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm border-collapse">
                         <thead>
-                          <tr className="bg-gray-50 dark:bg-gray-800">
+                          <tr className="bg-muted">
                             {Object.keys(upload.dataProfile.sampleData[0]).map((header) => (
                               <th key={header} className="px-3 py-2 text-left font-medium border-b">
                                 {header}
@@ -374,7 +374,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                         </thead>
                         <tbody>
                           {upload.dataProfile.sampleData.slice(0, 5).map((row, index) => (
-                            <tr key={index} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <tr key={index} className="border-b hover:bg-muted">
                               {Object.values(row).map((value, cellIndex) => (
                                 <td key={cellIndex} className="px-3 py-2 text-sm">
                                   {String(value || '').length > 50 
@@ -387,7 +387,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                         </tbody>
                       </table>
                       {upload.dataProfile.sampleData.length > 5 && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-muted-foreground mt-2">
                           Showing first 5 rows of {upload.dataProfile.sampleData.length} total rows
                         </p>
                       )}
@@ -400,9 +400,9 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                       <h5 className="font-medium mb-2">Field Information</h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {upload.dataProfile.fields.map((field) => (
-                          <div key={field.name} className="p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
+                          <div key={field.name} className="p-2 bg-muted rounded text-xs">
                             <div className="font-medium">{field.name}</div>
-                            <div className="text-gray-500">
+                                                          <div className="text-muted-foreground">
                               Type: {field.type} | Unique: {field.uniqueValues} | Missing: {field.missingValues}
                             </div>
                           </div>
@@ -422,15 +422,15 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
           </CardHeader>
           <CardContent>
             <div className="text-center py-8">
-              <File className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <File className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 No data loaded yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Завантажте файл, щоб побачити превью даних
               </p>
               <div className="space-y-3">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Підтримуються формати: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, та інші
                 </p>
               </div>

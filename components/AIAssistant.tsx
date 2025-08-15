@@ -342,7 +342,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
             {isCollapsed ? (
                               <MessageSquare className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
             )}
           </div>
         </CardTitle>
@@ -381,8 +381,8 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                 className={`flex gap-2 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.type === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-3 w-3 text-blue-600" />
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Bot className="h-3 w-3 text-primary" />
                   </div>
                 )}
                 
@@ -390,14 +390,14 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                   className={`max-w-[85%] rounded-lg p-2 text-sm ${
                     message.type === 'user'
                       ? 'bg-primary text-primary-foreground'
-                      : 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
+                      : 'bg-muted text-foreground border border-border'
                   }`}
                 >
                   <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
                   
                   {message.suggestions && (
                     <div className="mt-2 space-y-1">
-                                             <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Швидкі запити: ⚡</div>
+                                             <div className="text-xs font-medium text-muted-foreground">Швидкі запити: ⚡</div>
                       <div className="flex flex-wrap gap-1">
                         {message.suggestions.map((suggestion, index) => (
                           <Button
@@ -416,8 +416,8 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                 </div>
                 
                 {message.type === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <User className="h-3 w-3 text-gray-600" />
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <User className="h-3 w-3 text-muted-foreground" />
                   </div>
                 )}
               </div>
@@ -425,17 +425,17 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
             
             {isTyping && (
               <div className="flex gap-2 justify-start">
-                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Bot className="h-3 w-3 text-blue-600" />
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Bot className="h-3 w-3 text-primary" />
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+                <div className="bg-muted rounded-lg p-2 border border-border">
                   <div className="flex items-center gap-2">
                     <div className="flex space-x-1">
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                                         <span className="text-xs text-gray-500 dark:text-gray-400">AI думає... 🤔</span>
+                                         <span className="text-xs text-muted-foreground">AI думає... 🤔</span>
                   </div>
                 </div>
               </div>
@@ -445,7 +445,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
           </div>
           
           {/* Input */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-3">
+          <div className="border-t border-border p-3">
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <textarea
@@ -453,7 +453,7 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                                      placeholder="Запитай мене про що завгодно! 😊"
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary text-sm bg-background text-foreground"
                   rows={1}
                 />
               </div>

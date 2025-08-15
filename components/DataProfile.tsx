@@ -31,7 +31,7 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
       case 'string':
         return <Type className="h-4 w-4 text-purple-500" />
       default:
-        return <Type className="h-4 w-4 text-gray-500" />
+        return <Type className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -56,23 +56,23 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{dataProfile.rowCount.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Total Rows</div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-primary">{dataProfile.rowCount.toLocaleString()}</div>
+              <div className="text-sm text-muted-foreground">Total Rows</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{dataProfile.columnCount}</div>
-              <div className="text-sm text-gray-600">Columns</div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-primary">{dataProfile.columnCount}</div>
+              <div className="text-sm text-muted-foreground">Columns</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-primary">
                 {dataProfile.size ? `${(dataProfile.size / 1024).toFixed(1)} KB` : 'Unknown'}
               </div>
-              <div className="text-sm text-gray-600">File Size</div>
+              <div className="text-sm text-muted-foreground">File Size</div>
             </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{dataProfile.format?.toUpperCase()}</div>
-              <div className="text-sm text-gray-600">Format</div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-primary">{dataProfile.format?.toUpperCase()}</div>
+              <div className="text-sm text-muted-foreground">Format</div>
             </div>
           </div>
         </CardContent>
@@ -93,11 +93,11 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
               if (count === 0) return null
               
               return (
-                <div key={type} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div key={type} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                   {getFieldTypeIcon(type)}
                   <div>
-                    <div className="font-medium">{count}</div>
-                    <div className="text-sm text-gray-600 capitalize">{type}</div>
+                    <div className="font-medium text-foreground">{count}</div>
+                    <div className="text-sm text-muted-foreground capitalize">{type}</div>
                   </div>
                 </div>
               )
@@ -127,39 +127,39 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
                       {getFieldTypeIcon(field.type)}
                       <div>
                         <h3 className="font-medium">{field.name}</h3>
-                        <p className="text-sm text-gray-600 capitalize">{field.type}</p>
+                        <p className="text-sm text-muted-foreground capitalize">{field.type}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className={`font-medium ${quality.color}`}>{quality.label}</div>
-                      <div className="text-sm text-gray-600">{quality.score}% quality</div>
+                      <div className="text-sm text-muted-foreground">{quality.score}% quality</div>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Unique values:</span>
+                      <span className="text-muted-foreground">Unique values:</span>
                       <span className="ml-2 font-medium">{(field.uniqueValues || 0).toLocaleString()}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Missing values:</span>
+                      <span className="text-muted-foreground">Missing values:</span>
                       <span className="ml-2 font-medium">{(field.missingValues || 0).toLocaleString()} ({missingPercentage}%)</span>
                     </div>
                     {field.type === 'number' || field.type === 'integer' ? (
                       <>
                         <div>
-                          <span className="text-gray-600">Min:</span>
+                          <span className="text-muted-foreground">Min:</span>
                           <span className="ml-2 font-medium">{field.min?.toLocaleString() || 'N/A'}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">Max:</span>
+                          <span className="text-muted-foreground">Max:</span>
                           <span className="ml-2 font-medium">{field.max?.toLocaleString() || 'N/A'}</span>
                         </div>
                       </>
                     ) : (
                       <>
                         <div>
-                          <span className="text-gray-600">Cardinality:</span>
+                          <span className="text-muted-foreground">Cardinality:</span>
                           <span className="ml-2 font-medium">
                             {(field.uniqueValues || 0) <= 10 ? 'Low' : (field.uniqueValues || 0) <= 100 ? 'Medium' : 'High'}
                           </span>
@@ -213,12 +213,12 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
             </div>
 
             {/* Data Type Suggestions */}
-            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
-                <Type className="h-5 w-5 text-blue-600" />
+                <Type className="h-5 w-5 text-primary" />
                 <div>
-                  <h3 className="font-medium text-blue-800">Type Detection</h3>
-                  <p className="text-sm text-blue-700">
+                  <h3 className="font-medium text-foreground">Type Detection</h3>
+                  <p className="text-sm text-muted-foreground">
                     {dataProfile.fields.filter(f => f.type === 'string').length} fields detected as text
                   </p>
                 </div>
@@ -229,12 +229,12 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
             </div>
 
             {/* Cardinality Analysis */}
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
-                <TrendingUp className="h-5 w-5 text-green-600" />
+                <TrendingUp className="h-5 w-5 text-primary" />
                 <div>
-                  <h3 className="font-medium text-green-800">Cardinality Analysis</h3>
-                  <p className="text-sm text-green-700">
+                  <h3 className="font-medium text-foreground">Cardinality Analysis</h3>
+                  <p className="text-sm text-muted-foreground">
                     {dataProfile.fields.filter(f => (f.uniqueValues || 0) <= 10).length} low-cardinality fields found
                   </p>
                 </div>
@@ -270,12 +270,12 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
                 </thead>
                 <tbody>
                   {dataProfile.sampleData.map((row, rowIndex) => (
-                    <tr key={rowIndex} className="border-b hover:bg-gray-50">
+                    <tr key={rowIndex} className="border-b hover:bg-muted">
                       {dataProfile.fields.map((field, colIndex) => (
                         <td key={colIndex} className="p-2">
                           {row[field.name] !== null && row[field.name] !== undefined 
                             ? String(row[field.name]).substring(0, 50)
-                            : <span className="text-gray-400">null</span>
+                            : <span className="text-muted-foreground">null</span>
                           }
                         </td>
                       ))}
@@ -299,11 +299,11 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
         <CardContent>
           <div className="space-y-3">
             {dataProfile.fields.filter(f => (f.missingValues || 0) > 0).length > 0 && (
-              <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
-                <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-warning-600 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-orange-800">Handle Missing Data</h4>
-                  <p className="text-sm text-orange-700">
+                  <h4 className="font-medium text-foreground">Handle Missing Data</h4>
+                  <p className="text-sm text-muted-foreground">
                     Consider imputation strategies for fields with missing values to improve data quality.
                   </p>
                 </div>
@@ -311,11 +311,11 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
             )}
             
             {dataProfile.fields.filter(f => f.type === 'string' && (f.uniqueValues || 0) <= 10).length > 0 && (
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Type className="h-4 w-4 text-blue-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                <Type className="h-4 w-4 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-blue-800">Consider Categorical Encoding</h4>
-                  <p className="text-sm text-blue-700">
+                  <h4 className="font-medium text-foreground">Consider Categorical Encoding</h4>
+                  <p className="text-sm text-muted-foreground">
                     Low-cardinality string fields might be better treated as categorical variables.
                   </p>
                 </div>
@@ -323,11 +323,11 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
             )}
             
             {dataProfile.fields.filter(f => f.type === 'number' || f.type === 'integer').length >= 2 && (
-              <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                <TrendingUp className="h-4 w-4 text-green-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                <TrendingUp className="h-4 w-4 text-success-600 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-green-800">Correlation Analysis Available</h4>
-                  <p className="text-sm text-green-700">
+                  <h4 className="font-medium text-foreground">Correlation Analysis Available</h4>
+                  <p className="text-sm text-muted-foreground">
                     Multiple numeric fields detected. Consider correlation analysis for insights.
                   </p>
                 </div>

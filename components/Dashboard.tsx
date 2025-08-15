@@ -326,7 +326,7 @@ export function Dashboard({
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   {selectedCharts.length} charts selected
                 </span>
                 <Button
@@ -454,7 +454,7 @@ export function Dashboard({
               </CardHeader>
               
               <CardContent>
-                <div className="h-48 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div className="h-48 bg-card rounded-lg border border-border overflow-hidden">
                   {/* Тут потрібно буде передати dataProfile, але поки що покажемо заглушку */}
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center">
@@ -497,7 +497,7 @@ export function Dashboard({
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                       {getChartIcon(chart.mark)}
                     </div>
                     

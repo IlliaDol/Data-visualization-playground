@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { FileUpload } from '@/components/FileUpload'
 import { ChartBuilder } from '@/components/ChartBuilder'
 import { AIAssistant } from '@/components/AIAssistant'
+import { DataCleaner } from '@/components/DataCleaner'
 import { DataProfile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +16,7 @@ export default function HomePage() {
   const [showPreview, setShowPreview] = useState(false)
   const [createdCharts, setCreatedCharts] = useState<any[]>([])
   const [aiAnalysisResult, setAiAnalysisResult] = useState<any>(null)
+  const [rawData, setRawData] = useState<any[]>([])
 
   // Завантажуємо збережені чарти при ініціалізації
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function HomePage() {
 
   const handleDataUploaded = (profile: DataProfile) => {
     setDataProfile(profile)
+    setRawData(profile.data || [])
     setShowPreview(false)
     setAiAnalysisResult(null) // Сбрасываем предыдущий анализ
   }
@@ -102,8 +105,19 @@ export default function HomePage() {
     console.log('AI Analysis completed:', result)
   }
 
+  const handleDataCleaned = (cleanedData: any[]) => {
+    setRawData(cleanedData)
+    // Оновлюємо DataProfile з очищеними даними
+    if (dataProfile) {
+      setDataProfile({
+        ...dataProfile,
+        data: cleanedData
+      })
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted transition-all duration-300">
+    <div className="min-h-screen bg-background transition-all duration-300">
       <div className="container mx-auto px-4 py-8" style={{ minHeight: '100vh' }}>
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -142,6 +156,16 @@ export default function HomePage() {
                 onError={handleFileError} 
               />
               
+              {/* Data Cleaner */}
+              {dataProfile && rawData.length > 0 && (
+                <div className="mb-6">
+                  <DataCleaner 
+                    data={rawData}
+                    onDataCleaned={handleDataCleaned}
+                  />
+                </div>
+              )}
+              
               {/* Chart Builder */}
               {dataProfile && (
                 <ChartBuilder
@@ -161,19 +185,19 @@ export default function HomePage() {
               
               {/* AI Analysis Results */}
               {aiAnalysisResult && (
-                <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 text-green-900 dark:text-green-100">
+                    <CardTitle className="text-lg flex items-center gap-2 text-foreground">
                       <Zap className="h-5 w-5" />
                       AI Analysis Results
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="text-sm">
-                      <div className="font-medium text-green-800 dark:text-green-200 mb-2">
+                      <div className="font-medium text-foreground mb-2">
                         Recommended Chart: {aiAnalysisResult.chartType.toUpperCase()}
                       </div>
-                      <div className="text-green-700 dark:text-green-300 space-y-1">
+                      <div className="text-muted-foreground space-y-1">
                         <div>X Field: {aiAnalysisResult.xField || 'Not specified'}</div>
                         <div>Y Field: {aiAnalysisResult.yField || 'Not specified'}</div>
                         {aiAnalysisResult.colorField && (
@@ -184,13 +208,13 @@ export default function HomePage() {
                     
                     {aiAnalysisResult.insights && aiAnalysisResult.insights.length > 0 && (
                       <div className="text-sm">
-                        <div className="font-medium text-green-800 dark:text-green-200 mb-1">
+                        <div className="font-medium text-foreground mb-1">
                           Key Insights:
                         </div>
-                        <ul className="text-green-700 dark:text-green-300 space-y-1">
+                        <ul className="text-muted-foreground space-y-1">
                           {aiAnalysisResult.insights.slice(0, 3).map((insight: string, index: number) => (
                             <li key={index} className="flex items-start gap-2">
-                              <span className="text-green-600">•</span>
+                              <span className="text-primary">•</span>
                               {insight}
                             </li>
                           ))}
@@ -245,7 +269,7 @@ export default function HomePage() {
       </div>
 
       {/* Supported Formats Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-t border-gray-200 dark:border-gray-700 mt-16 transition-all duration-300">
+      <div className="bg-muted/30 border-t border-border mt-16 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">

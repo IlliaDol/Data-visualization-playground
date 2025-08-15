@@ -13,7 +13,7 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   // Виключаємо проблемні сторінки з експорту
   experimental: {
-    excludeDefaultMomentLocales: false,
+    // excludeDefaultMomentLocales: false, // Removed deprecated option
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY || '',

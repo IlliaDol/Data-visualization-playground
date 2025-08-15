@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 // Core data types
 export interface DataField {
   name: string;
@@ -322,3 +324,97 @@ export type DeepPartial<T> = {
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+// ChartSpec Schema (стандартизована схема для графіків)
+export const ChartSpecZ = z.object({
+  version: z.literal('1'),
+  data: z.union([
+    z.object({ id: z.string() }).strict(),
+    z.object({ values: z.array(z.record(z.any())) }).strict(),
+  ]),
+  transforms: z.array(z.object({
+    type: z.enum(['filter','aggregate','calculate','bin','timeUnit']),
+    params: z.record(z.any())
+  })).optional(),
+  encoding: z.object({
+    x: z.object({ 
+      field: z.string(), 
+      type: z.enum(['quantitative','temporal','ordinal','nominal']),
+      aggregate: z.string().optional(),
+      bin: z.boolean().optional(),
+      timeUnit: z.string().optional()
+    }).partial().optional(),
+    y: z.object({ 
+      field: z.string(), 
+      type: z.enum(['quantitative','temporal','ordinal','nominal']),
+      aggregate: z.string().optional()
+    }).partial().optional(),
+    color: z.object({ 
+      field: z.string().optional(), 
+      type: z.string().optional() 
+    }).partial().optional(),
+    size: z.object({ 
+      field: z.string().optional(), 
+      type: z.string().optional() 
+    }).partial().optional(),
+    tooltip: z.array(z.object({ 
+      field: z.string(), 
+      type: z.string() 
+    })).optional()
+  }).strict(),
+  mark: z.enum(['bar','line','point','area','boxplot','heatmap','pie','treemap','sankey']),
+  title: z.string().optional(),
+  selection: z.any().optional(), // для linked-brushing у майбутньому
+  meta: z.object({ 
+    datasetHash: z.string().optional(), 
+    createdAt: z.string(), 
+    prompt: z.string().optional() 
+  })
+})
+
+export type ChartSpecV1 = z.infer<typeof ChartSpecZ>
+
+// Transform types для "Fix my data"
+export type Transform =
+ | { op: 'setType'; field: string; to: 'date'|'number'|'string' }
+ | { op: 'parseDate'; field: string; pattern: 'auto'|string }
+ | { op: 'normalizeDecimal'; field: string; decimal: '.'|','; thousands?: '.'|',' | ' ' }
+ | { op: 'trim'; field: string }
+ | { op: 'replace'; field: string; from: RegExp; to: string }
+ | { op: 'dropDuplicates'; subset?: string[] }
+ | { op: 'impute'; field: string; method: 'median'|'mean'|'mode'|'zero' }
+ | { op: 'clip'; field: string; min?: number; max?: number }
+
+export type TransformPlan = { 
+  items: Transform[]; 
+  preview: Array<{ field: string; before: any; after: any }>; 
+  stats: Record<string, any> 
+}
+
+// Insight types для Auto-Report
+export type Insight = {
+  kind: 'trend'|'spike'|'drop'|'seasonality'|'correlation'|'cohort'|'funnel';
+  summary: string; // людською мовою
+  evidence: { metric: string; value?: number; delta?: number; p?: number };
+  chartSpecRef: string; // id у звіті
+}
+
+export type Report = {
+  id: string;
+  datasetHash: string;
+  specs: ChartSpecV1[];
+  insights: Insight[];
+  createdAt: string;
+}
+
+// Permalink types
+export type PermalinkState = {
+  chartSpec: ChartSpecV1;
+  dataSample?: any[]; // для приватних даних
+  transforms?: Transform[];
+  meta: {
+    originalDatasetHash: string;
+    createdAt: string;
+    prompt?: string;
+  }
+}

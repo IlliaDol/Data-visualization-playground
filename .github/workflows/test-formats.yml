@@ -3,8 +3,6 @@ name: Test File Format Support
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:

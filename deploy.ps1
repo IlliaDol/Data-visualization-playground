@@ -12,7 +12,7 @@ try {
 }
 
 # Check if there are any changes to commit
-$hasChanges = git diff-index --quiet HEAD --
+git diff-index --quiet HEAD --
 if ($LASTEXITCODE -ne 0) {
     Write-Host "📝 Staging changes..." -ForegroundColor Yellow
     git add .

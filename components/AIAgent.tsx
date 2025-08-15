@@ -525,7 +525,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
 
           {/* Analysis Progress */}
           {isAnalyzing && (
-            <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
+            <div className="bg-muted p-4 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
@@ -541,7 +541,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
           {/* Analysis Results */}
           {analysisResult && (
             <div className="space-y-4">
-              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="bg-muted p-4 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <CheckCircle className="h-5 w-5 text-green-600" />
                   <h4 className="font-medium text-green-900 dark:text-green-100">

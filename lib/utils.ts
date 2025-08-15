@@ -159,8 +159,7 @@ const SUPPORTED_FORMATS = {
   
   // Другие форматы
   'text/ini': ['.ini', '.cfg', '.conf'],
-  'application/ini': ['.ini', '.cfg', '.conf']
-},
+  'application/ini': ['.ini', '.cfg', '.conf'],
   'application/x-gzip': ['.gz'],
   'application/zip': ['.zip'],
   'application/x-zip-compressed': ['.zip'],
@@ -465,7 +464,7 @@ export async function parseExcel(file: File): Promise<{ data: Record<string, any
         const dataRows = jsonData.slice(1) as any[][]
         
         // Convert to array of objects
-        const data = dataRows.map(row => {
+        const processedData = dataRows.map(row => {
           const obj: Record<string, any> = {}
           headers.forEach((header, index) => {
             obj[header] = row[index] || null
@@ -473,7 +472,7 @@ export async function parseExcel(file: File): Promise<{ data: Record<string, any
           return obj
         })
         
-        resolve({ data, fields: headers })
+        resolve({ data: processedData, fields: headers })
     } catch (error) {
         reject(new Error(`Failed to parse Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`))
     }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .header p {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .button:hover {
+      background: #0056b3;
+    }
+    
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .info {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+    }
+    
+    .status {
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 DataViz AI</h1>
+    <p>Chart anything from web tables</p>
+  </div>
+  
+  <button id="extractBtn" class="button">
+    📋 Extract table from page
+  </button>
+  
+  <button id="openAppBtn" class="button">
+    🚀 Open DataViz AI
+  </button>
+  
+  <div class="info">
+    <p><strong>Як використовувати:</strong></p>
+    <ul>
+      <li>Клікніть правою кнопкою на таблиці</li>
+      <li>Виберіть "Open in DataViz AI"</li>
+      <li>Або використайте кнопку вище</li>
+    </ul>
+  </div>
+  
+  <div id="status"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -143,33 +143,34 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    /* Покращена темна тема з повністю темним фоном */
+    --background: 240 10% 2%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 3%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 3%;
     --popover-foreground: 0 0% 98%;
     --primary: 142.1 76.2% 36.3%;
     --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 3.7% 12%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --muted: 240 3.7% 12%;
+    --muted-foreground: 240 5% 75%;
+    --accent: 240 3.7% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 15%;
+    --input: 240 3.7% 12%;
     --ring: 142.1 76.2% 36.3%;
     
     /* Enhanced Color Palette - Dark Theme */
-    --chart-bg: 240 10% 3.9%;
-    --chart-border: 240 3.7% 15.9%;
+    --chart-bg: 240 10% 2%;
+    --chart-border: 240 3.7% 15%;
     --chart-text: 0 0% 98%;
-    --chart-grid: 240 3.7% 15.9%;
-    --gradient-start: 240 10% 3.9%;
-    --gradient-end: 240 3.7% 15.9%;
+    --chart-grid: 240 3.7% 15%;
+    --gradient-start: 240 10% 2%;
+    --gradient-end: 240 3.7% 12%;
     
     /* Primary Color Palette - Dark */
     --primary-50: 142 76% 36%;
@@ -185,30 +186,30 @@
     --primary-950: 142 76% 96%;
     
     /* Secondary Color Palette - Dark */
-    --secondary-50: 240 3.7% 15.9%;
-    --secondary-100: 240 3.7% 20%;
-    --secondary-200: 240 3.7% 25%;
-    --secondary-300: 240 3.7% 30%;
-    --secondary-400: 240 3.7% 35%;
-    --secondary-500: 240 3.7% 40%;
-    --secondary-600: 240 3.7% 45%;
-    --secondary-700: 240 3.7% 50%;
-    --secondary-800: 240 3.7% 55%;
-    --secondary-900: 240 3.7% 60%;
-    --secondary-950: 240 3.7% 65%;
+    --secondary-50: 240 3.7% 12%;
+    --secondary-100: 240 3.7% 16%;
+    --secondary-200: 240 3.7% 20%;
+    --secondary-300: 240 3.7% 24%;
+    --secondary-400: 240 3.7% 28%;
+    --secondary-500: 240 3.7% 32%;
+    --secondary-600: 240 3.7% 36%;
+    --secondary-700: 240 3.7% 40%;
+    --secondary-800: 240 3.7% 44%;
+    --secondary-900: 240 3.7% 48%;
+    --secondary-950: 240 3.7% 52%;
     
     /* Accent Color Palette - Dark */
-    --accent-50: 240 10% 4%;
-    --accent-100: 240 10% 14%;
-    --accent-200: 240 6% 20%;
-    --accent-300: 240 4% 26%;
-    --accent-400: 240 5% 34%;
-    --accent-500: 240 4% 46%;
-    --accent-600: 240 3% 65%;
-    --accent-700: 240 4% 84%;
-    --accent-800: 240 4% 90%;
-    --accent-900: 240 4% 95%;
-    --accent-950: 240 5% 96%;
+    --accent-50: 240 10% 2%;
+    --accent-100: 240 10% 8%;
+    --accent-200: 240 6% 12%;
+    --accent-300: 240 4% 16%;
+    --accent-400: 240 5% 20%;
+    --accent-500: 240 4% 24%;
+    --accent-600: 240 3% 28%;
+    --accent-700: 240 4% 32%;
+    --accent-800: 240 4% 36%;
+    --accent-900: 240 4% 40%;
+    --accent-950: 240 5% 44%;
     
     /* Success Color Palette - Dark */
     --success-50: 144 83% 10%;
@@ -286,6 +287,120 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-200;
+  }
+  
+  /* Забезпечуємо повне темне оформлення для всіх елементів */
+  .dark {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  
+  .dark * {
+    border-color: hsl(var(--border));
+  }
+  
+  .dark html {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  
+  /* Покращений контраст для тексту в темній темі */
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: hsl(var(--foreground));
+  }
+  
+  .dark p, .dark span, .dark div {
+    color: hsl(var(--foreground));
+  }
+  
+  .dark a {
+    color: hsl(var(--primary));
+  }
+  
+  .dark a:hover {
+    color: hsl(var(--primary) / 0.8);
+  }
+  
+  /* Покращений контраст для кнопок */
+  .dark button {
+    color: hsl(var(--foreground));
+  }
+  
+  /* Покращений контраст для input полів */
+  .dark input, .dark textarea, .dark select {
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+  
+  .dark input::placeholder, .dark textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+  
+  /* Додаткові правила для повного темного оформлення */
+  .dark .bg-white {
+    background-color: hsl(var(--card)) !important;
+  }
+  
+  .dark .text-black {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .border-gray-200 {
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  .dark .bg-gray-50 {
+    background-color: hsl(var(--muted)) !important;
+  }
+  
+  .dark .bg-gray-100 {
+    background-color: hsl(var(--secondary)) !important;
+  }
+  
+  .dark .text-gray-600 {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+  
+  .dark .text-gray-700 {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .text-gray-800 {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .text-gray-900 {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* Забезпечуємо темний фон для всіх секцій */
+  .dark section {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark article {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark aside {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark header {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark footer {
+    background-color: hsl(var(--background));
+  }
+  
+  .dark nav {
+    background-color: hsl(var(--background));
   }
 }
 

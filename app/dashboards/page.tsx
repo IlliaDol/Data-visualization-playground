@@ -51,7 +51,7 @@ export default function DashboardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-all duration-300">
+    <div className="min-h-screen bg-background p-8 transition-all duration-300">
       <div className="max-w-7xl mx-auto">
         <Dashboard 
           charts={charts}

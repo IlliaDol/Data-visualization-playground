@@ -84,12 +84,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-all duration-300">
+    <div className="min-h-screen bg-background p-8 transition-all duration-300">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Settings</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-4xl font-bold text-foreground">Settings</h1>
+          <p className="text-muted-foreground mt-1">
             Configure your Data Visualization Playground preferences
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function SettingsPage() {
         {/* General Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white font-bold">
+            <CardTitle className="flex items-center gap-2 text-foreground font-bold">
               <Settings className="h-5 w-5" />
               General Settings
             </CardTitle>
@@ -110,13 +110,13 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Theme
                 </label>
                 <select
                   value={settings.theme}
                   onChange={(e) => handleSettingChange('theme', e.target.value)}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                 >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
@@ -125,13 +125,13 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Language
                 </label>
                 <select
                   value={settings.language}
                   onChange={(e) => handleSettingChange('language', e.target.value)}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                 >
                   <option value="en">English</option>
                   <option value="uk">Українська</option>
@@ -144,10 +144,10 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-sm font-medium text-foreground">
                     Auto-save charts
                   </label>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Automatically save your work as you create charts
                   </p>
                 </div>
@@ -161,10 +161,10 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-sm font-medium text-foreground">
                     Notifications
                   </label>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Show notifications for chart completion and errors
                   </p>
                 </div>
@@ -182,14 +182,14 @@ export default function SettingsPage() {
         {/* API Keys */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white font-bold">
+            <CardTitle className="flex items-center gap-2 text-foreground font-bold">
               <Key className="h-5 w-5" />
               API Keys
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 OpenAI API Key
               </label>
               <div className="relative">
@@ -197,7 +197,7 @@ export default function SettingsPage() {
                   type={showApiKey ? 'text' : 'password'}
                   value={settings.openAIKey}
                   onChange={(e) => handleSettingChange('openAIKey', e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 pr-10 border border-border rounded-md bg-background text-foreground"
                   placeholder="sk-..."
                 />
                 <button
@@ -211,7 +211,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Anthropic API Key
               </label>
               <div className="relative">
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                   type={showApiKey ? 'text' : 'password'}
                   value={settings.anthropicKey}
                   onChange={(e) => handleSettingChange('anthropicKey', e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 pr-10 border border-border rounded-md bg-background text-foreground"
                   placeholder="sk-ant-..."
                 />
                 <button
@@ -233,7 +233,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 DeepSeek API Key
               </label>
               <div className="relative">
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                   type={showApiKey ? 'text' : 'password'}
                   value={settings.deepseekKey}
                   onChange={(e) => handleSettingChange('deepseekKey', e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full p-2 pr-10 border border-border rounded-md bg-background text-foreground"
                   placeholder="sk-..."
                 />
                 <button
@@ -259,7 +259,7 @@ export default function SettingsPage() {
         {/* Export/Import */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white font-bold">
+            <CardTitle className="flex items-center gap-2 text-foreground font-bold">
               <Globe className="h-5 w-5" />
               Settings Management
             </CardTitle>
@@ -303,7 +303,7 @@ export default function SettingsPage() {
         {/* Data Management */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white font-bold">
+            <CardTitle className="flex items-center gap-2 text-foreground font-bold">
               <Download className="h-5 w-5" />
               Data Management
             </CardTitle>
@@ -354,21 +354,21 @@ export default function SettingsPage() {
               </Button>
             </div>
             
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               <p>• <strong>Export All Data:</strong> Зберегти всі ваші чарти та історії як файл</p>
               <p>• <strong>Clear All Data:</strong> Видалити всі ваші чарти та історії (незворотньо)</p>
             </div>
             
             <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">Ваші дані:</h4>
+              <h4 className="font-medium text-foreground mb-2">Ваші дані:</h4>
               <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Чарти:</span>
-                  <span className="ml-2 font-medium text-gray-900 dark:text-white">{getDataStats().chartsCount}</span>
+                  <span className="text-muted-foreground">Чарти:</span>
+                  <span className="ml-2 font-medium text-foreground">{getDataStats().chartsCount}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Історії:</span>
-                  <span className="ml-2 font-medium text-gray-900 dark:text-white">{getDataStats().storiesCount}</span>
+                  <span className="text-muted-foreground">Історії:</span>
+                  <span className="ml-2 font-medium text-foreground">{getDataStats().storiesCount}</span>
                 </div>
               </div>
               
