@@ -229,8 +229,8 @@ export function Dashboard({
       {/* Dashboard Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                      <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
             {charts.length} charts • {charts.length > 0 
               ? `Last updated ${new Date(Math.max(...charts.map(chart => chart.updatedAt.getTime()))).toLocaleDateString()}`
               : 'No charts yet'
