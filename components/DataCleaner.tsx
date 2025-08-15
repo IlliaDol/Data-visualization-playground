@@ -197,7 +197,7 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                           <div className="flex-shrink-0">
                             {item.op === 'setType' && <Hash className="h-4 w-4 text-primary" />}
                             {item.op === 'parseDate' && <Calendar className="h-4 w-4 text-success-600" />}
-                            {item.op === 'trim' && <FileText className="h-4 w-4 text-orange-600" />}
+                            {item.op === 'trim' && <FileText className="h-4 w-4 text-warning-600" />}
                             {item.op === 'dropDuplicates' && <Trash2 className="h-4 w-4 text-red-600" />}
                             {item.op === 'normalizeDecimal' && <Hash className="h-4 w-4 text-purple-600" />}
                           </div>
@@ -296,7 +296,7 @@ export function DataCleaner({ data, onDataCleaned, onClose }: DataCleanerProps) 
                         <CheckCircle className="h-5 w-5" />
                         <span className="font-medium">Дані успішно очищено!</span>
                       </div>
-                      <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                      <p className="text-sm text-muted-foreground mt-2">
                         Всі трансформації застосовано. Тепер ви можете створювати графіки з очищеними даними.
                       </p>
                     </CardContent>

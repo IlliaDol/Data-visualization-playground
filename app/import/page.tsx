@@ -134,7 +134,7 @@ export default function ImportPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <div className="text-2xl font-bold text-green-700 dark:text-green-300">
+                      <div className="text-2xl font-bold text-success-700">
                         {importedData.length}
                       </div>
                       <div className="text-sm text-success-600">
@@ -142,7 +142,7 @@ export default function ImportPage() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-green-700 dark:text-green-300">
+                      <div className="text-2xl font-bold text-success-700">
                         {Object.keys(importedData[0] || {}).length}
                       </div>
                       <div className="text-sm text-success-600">
@@ -150,7 +150,7 @@ export default function ImportPage() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-green-700 dark:text-green-300">
+                      <div className="text-2xl font-bold text-success-700">
                         ✓
                       </div>
                       <div className="text-sm text-success-600">

@@ -13,7 +13,7 @@ const themeInfo = {
     icon: Sun,
     description: 'Світла тема',
     features: ['Чіткий контраст', 'Денне використання', 'Професійний вигляд'],
-    color: 'text-yellow-600'
+            color: 'text-warning-600'
   },
   dark: {
     name: 'Dark',

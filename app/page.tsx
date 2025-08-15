@@ -36,6 +36,23 @@ export default function HomePage() {
           console.error('Помилка завантаження чартів:', error)
         }
       }
+
+      // Перевіряємо чи є чарт для редагування
+      const editChart = localStorage.getItem('editChart')
+      if (editChart) {
+        try {
+          const chartToEdit = JSON.parse(editChart)
+          console.log('Завантажуємо чарт для редагування:', chartToEdit)
+          
+          // Тут можна додати логіку для завантаження даних чарту
+          // та налаштування ChartBuilder для редагування
+          
+          // Очищаємо localStorage після завантаження
+          localStorage.removeItem('editChart')
+        } catch (error) {
+          console.error('Помилка завантаження чарту для редагування:', error)
+        }
+      }
     }
   }, [])
 

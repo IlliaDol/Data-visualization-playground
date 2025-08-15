@@ -194,19 +194,18 @@ export function Dashboard({
   }
 
   const handleViewChart = (chart: ChartSpec) => {
-    // Створюємо модальне вікно або переходимо до перегляду чарту
+    // Зберігаємо дані чарту для редагування
     const chartData = {
       ...chart,
-      viewMode: 'fullscreen',
+      editMode: true,
       timestamp: new Date().toISOString()
     }
     
-    // Зберігаємо дані чарту для перегляду
-    localStorage.setItem('viewChart', JSON.stringify(chartData))
+    // Зберігаємо в localStorage для передачі на головну сторінку
+    localStorage.setItem('editChart', JSON.stringify(chartData))
     
-    // Можна відкрити в новому вікні або показати модаль
-    const chartUrl = `/chart/${chart.id}`
-    window.open(chartUrl, '_blank')
+    // Перенаправляємо на головну сторінку з параметром редагування
+    window.location.href = `/?edit=${chart.id}`
   }
 
   const getChartIcon = (mark: string) => {

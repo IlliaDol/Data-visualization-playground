@@ -39,8 +39,8 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
     const missingPercentage = (field.missingValues / dataProfile.rowCount) * 100
     if (missingPercentage === 0) return { score: 100, label: 'Perfect', color: 'text-success-600' }
     if (missingPercentage < 5) return { score: 90, label: 'Excellent', color: 'text-success-600' }
-    if (missingPercentage < 10) return { score: 75, label: 'Good', color: 'text-yellow-600' }
-    if (missingPercentage < 25) return { score: 50, label: 'Fair', color: 'text-orange-600' }
+    if (missingPercentage < 10) return { score: 75, label: 'Good', color: 'text-warning-600' }
+    if (missingPercentage < 25) return { score: 50, label: 'Fair', color: 'text-warning-600' }
     return { score: 25, label: 'Poor', color: 'text-red-600' }
   }
 
@@ -199,7 +199,7 @@ export function DataProfileComponent({ dataProfile }: DataProfileProps) {
             {/* Missing Data Analysis */}
             <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <AlertTriangle className="h-5 w-5 text-warning-600" />
                 <div>
                   <h3 className="font-medium text-yellow-800">Missing Data</h3>
                   <p className="text-sm text-yellow-700">

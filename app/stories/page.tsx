@@ -11,13 +11,19 @@ import {
   Edit, 
   Share2, 
   Calendar,
-  Eye
+  Eye,
+  Play,
+  BarChart3,
+  Trash2
 } from 'lucide-react'
 import { Story } from '@/types'
+import { StoryBuilder } from '@/components/StoryBuilder'
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([])
   const [filter, setFilter] = useState<'all' | 'draft' | 'published'>('all')
+  const [showStoryBuilder, setShowStoryBuilder] = useState(false)
+  const [editingStory, setEditingStory] = useState<Story | null>(null)
 
   useEffect(() => {
     // Завантажуємо реальні дані з localStorage
@@ -30,7 +36,8 @@ export default function StoriesPage() {
           const storiesWithDates = parsedStories.map((story: any) => ({
             ...story,
             createdAt: new Date(story.createdAt),
-            updatedAt: new Date(story.updatedAt)
+            updatedAt: new Date(story.updatedAt),
+            slides: story.slides || []
           }))
           setStories(storiesWithDates)
         } catch (error) {
@@ -46,7 +53,7 @@ export default function StoriesPage() {
   )
 
   const handleCreateStory = () => {
-    // Створюємо нову історію з реальними даними
+    // Перевіряємо чи є чарти для створення story
     if (typeof window !== 'undefined') {
       const savedCharts = localStorage.getItem('userCharts')
       let charts = []
@@ -65,351 +72,266 @@ export default function StoriesPage() {
         return
       }
       
-      const newStory: Story = {
-        id: crypto.randomUUID(),
-        title: `Data Story ${stories.length + 1}`,
-        description: `Story created on ${new Date().toLocaleDateString()}`,
-        slides: [],
-        theme: 'light',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-      
-      const updatedStories = [...stories, newStory]
-      setStories(updatedStories)
-      localStorage.setItem('userStories', JSON.stringify(updatedStories))
-      
-      console.log('Нову історію створено:', newStory.title)
+      setEditingStory(null)
+      setShowStoryBuilder(true)
     }
   }
 
-  const handleEditStory = (storyId: string) => {
-    console.log('Edit story:', storyId)
-    // Тут можна додати навігацію до редагування історії
+  const handleEditStory = (story: Story) => {
+    setEditingStory(story)
+    setShowStoryBuilder(true)
+  }
+
+  const handleSaveStory = (story: Story) => {
+    const updatedStories = editingStory
+      ? stories.map(s => s.id === story.id ? story : s)
+      : [...stories, story]
+    
+    setStories(updatedStories)
+    localStorage.setItem('userStories', JSON.stringify(updatedStories))
+    setShowStoryBuilder(false)
+    setEditingStory(null)
+    
+    console.log('Story saved:', story.title)
+  }
+
+  const handleCancelStory = () => {
+    setShowStoryBuilder(false)
+    setEditingStory(null)
   }
 
   const handleShareStory = (storyId: string) => {
-    console.log('Share story:', storyId)
-    // Тут можна додати функціонал поширення
+    const story = stories.find(s => s.id === storyId)
+    if (!story) return
+    
+    // Створюємо посилання для поширення
+    const shareData = {
+      story,
+      shareUrl: `${window.location.origin}/stories/${storyId}`,
+      sharedAt: new Date().toISOString()
+    }
+    
+    const shareJson = JSON.stringify(shareData, null, 2)
+    const blob = new Blob([shareJson], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `story-${story.title.toLowerCase().replace(/\s+/g, '-')}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    
+    alert(`✅ Story "${story.title}" експортовано для поширення!`)
   }
 
   const handleDeleteStory = (storyId: string) => {
-    const updatedStories = stories.filter(story => story.id !== storyId)
-    setStories(updatedStories)
-    if (typeof window !== 'undefined') {
+    const story = stories.find(s => s.id === storyId)
+    if (!story) return
+    
+    const confirmed = confirm(`Ви впевнені, що хочете видалити story "${story.title}"? Ця дія не може бути скасована.`)
+    
+    if (confirmed) {
+      const updatedStories = stories.filter(s => s.id !== storyId)
+      setStories(updatedStories)
       localStorage.setItem('userStories', JSON.stringify(updatedStories))
+      alert(`✅ Story "${story.title}" видалено!`)
     }
   }
 
-  const getStatusColor = (status: string) => {
-    return status === 'published' ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100'
+  const handlePlayStory = (story: Story) => {
+    // Зберігаємо story для перегляду
+    localStorage.setItem('playStory', JSON.stringify(story))
+    window.open(`/stories/play/${story.id}`, '_blank')
+  }
+
+  if (showStoryBuilder) {
+    return (
+      <StoryBuilder
+        story={editingStory || undefined}
+        onSave={handleSaveStory}
+        onCancel={handleCancelStory}
+      />
+    )
   }
 
   return (
-    <div className="min-h-screen bg-background p-8 transition-all duration-300">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Data Stories</h1>
-            <p className="text-muted-foreground mt-1">
-              Create compelling narratives with your data visualizations
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              Data Stories
+            </h1>
+            <p className="text-xl text-muted-foreground mb-6">
+              Створюйте захоплюючі історії з вашими даними
             </p>
+            
+            {/* Features */}
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-6 w-6 text-primary" />
+                <span className="font-semibold">Чарти та Візуалізації</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Play className="h-6 w-6 text-success-600" />
+                <span className="font-semibold">Презентаційний режим</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Share2 className="h-6 w-6 text-info-600" />
+                <span className="font-semibold">Поширення</span>
+              </div>
+            </div>
           </div>
-          
-          <Button 
-            onClick={handleCreateStory} 
-            className="flex items-center gap-2"
-            disabled={(() => {
-              if (typeof window === 'undefined') return true
-              const savedCharts = localStorage.getItem('userCharts')
-              if (savedCharts) {
-                try {
-                  const charts = JSON.parse(savedCharts)
-                  return charts.length === 0
-                } catch (error) {
-                  return true
-                }
-              }
-              return true
-            })()}
-          >
-            <Plus className="h-4 w-4" />
-            {(() => {
-              if (typeof window === 'undefined') return 'No Charts'
-              const savedCharts = localStorage.getItem('userCharts')
-              if (savedCharts) {
-                try {
-                  const charts = JSON.parse(savedCharts)
-                  return charts.length === 0 ? 'No Charts' : 'Create Story'
-                } catch (error) {
-                  return 'No Charts'
-                }
-              }
-              return 'No Charts'
-            })()}
-          </Button>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">Total Stories</p>
-                <p className="text-2xl font-bold text-foreground">{stories.length}</p>
-                  </div>
-                <FileText className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">Published</p>
-                <p className="text-2xl font-bold text-foreground">
-                      {stories.filter(s => s.status === 'published').length}
-                    </p>
-                  </div>
-                <BookOpen className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">Total Views</p>
-                <p className="text-2xl font-bold text-foreground">
-                      {stories.reduce((sum, story) => sum + (story.views || 0), 0).toLocaleString()}
-                    </p>
-                  </div>
-                <Users className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">Total Charts</p>
-                <p className="text-2xl font-bold text-foreground">
-                      {stories.reduce((sum, story) => sum + (story.slides?.length || 0), 0)}
-                    </p>
-                  </div>
-                <FileText className="h-8 w-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            onClick={() => setFilter('all')}
-          >
-            All Stories ({stories.length})
-          </Button>
-          <Button
-            variant={filter === 'published' ? 'default' : 'outline'}
-            onClick={() => setFilter('published')}
-          >
-            Published ({stories.filter(s => s.status === 'published').length})
-          </Button>
-          <Button
-            variant={filter === 'draft' ? 'default' : 'outline'}
-            onClick={() => setFilter('draft')}
-          >
-            Drafts ({stories.filter(s => s.status === 'draft').length})
-          </Button>
-        </div>
-
-        {/* Stories Grid */}
-        {filteredStories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredStories.map((story) => (
-              <Card key={story.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                                      <CardTitle className="text-lg mb-2 text-foreground font-bold">{story.title}</CardTitle>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                        {story.description}
-                      </p>
-                    </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(story.status || 'draft')}`}>
-                      {story.status || 'draft'}
-                    </span>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-3">
-                    {/* Story Stats */}
-                                         <div className="flex items-center justify-between text-sm text-muted-foreground">
-                       <div className="flex items-center gap-4">
-                         <span className="flex items-center gap-1">
-                           <FileText className="h-4 w-4" />
-                           {story.slides?.length || 0} slides
-                         </span>
-                         <span className="flex items-center gap-1">
-                           <Users className="h-4 w-4" />
-                           {story.views || 0} views
-                         </span>
-                       </div>
-                       <span className="flex items-center gap-1">
-                         <Calendar className="h-4 w-4" />
-                         {story.updatedAt.toLocaleDateString()}
-                       </span>
-                     </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => handleEditStory(story.id)}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleShareStory(story.id)}
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteStory(story.id)}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          /* Empty State */
-          <Card>
-            <CardContent className="py-12">
-              <div className="text-center">
-                <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  No stories yet
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  {(() => {
-                    if (typeof window === 'undefined') return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити історію'
-                    const savedCharts = localStorage.getItem('userCharts')
-                    if (savedCharts) {
-                      try {
-                        const charts = JSON.parse(savedCharts)
-                        if (charts.length === 0) {
-                          return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити історію'
-                        } else {
-                          return 'Створіть свою першу історію даних, щоб поділитися інсайтами з командою'
-                        }
-                      } catch (error) {
-                        return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити історію'
-                      }
-                    }
-                    return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити історію'
-                  })()}
-                </p>
-                <div className="space-y-3">
-                  <Button 
-                    onClick={handleCreateStory}
-                    disabled={(() => {
-                      if (typeof window === 'undefined') return true
-                      const savedCharts = localStorage.getItem('userCharts')
-                      if (savedCharts) {
-                        try {
-                          const charts = JSON.parse(savedCharts)
-                          return charts.length === 0
-                        } catch (error) {
-                          return true
-                        }
-                      }
-                      return true
-                    })()}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {(() => {
-                      if (typeof window === 'undefined') return 'No Charts Available'
-                      const savedCharts = localStorage.getItem('userCharts')
-                      if (savedCharts) {
-                        try {
-                          const charts = JSON.parse(savedCharts)
-                          return charts.length === 0 ? 'No Charts Available' : 'Create First Story'
-                        } catch (error) {
-                          return 'No Charts Available'
-                        }
-                      }
-                      return 'No Charts Available'
-                    })()}
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => window.location.href = './'}
-                  >
-                    Create Chart First
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-                            <CardTitle className="text-foreground font-bold">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Controls */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
               <Button
-                variant="outline"
-                onClick={() => window.location.href = './'}
+                onClick={handleCreateStory}
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Create Chart
+                Створити Story
               </Button>
               
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = './dashboards'}
-                className="flex items-center gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                View Dashboards
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = './settings'}
-                className="flex items-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                Export All
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={filter === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('all')}
+                >
+                  Всі ({stories.length})
+                </Button>
+                <Button
+                  variant={filter === 'draft' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('draft')}
+                >
+                  Чернетки
+                </Button>
+                <Button
+                  variant={filter === 'published' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('published')}
+                >
+                  Опубліковані
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="text-sm text-muted-foreground">
+              {filteredStories.length} stories
+            </div>
+          </div>
+
+          {/* Stories Grid */}
+          {filteredStories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredStories.map((story) => (
+                <Card key={story.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">{story.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {story.description || 'Без опису'}
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Stats */}
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <span>{story.slides.length} slides</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>{story.updatedAt.toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handlePlayStory(story)}
+                          className="flex-1"
+                        >
+                          <Play className="h-4 w-4 mr-1" />
+                          Грати
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditStory(story)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleShareStory(story.id)}
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteStory(story.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            /* Empty State */
+            <Card>
+              <CardContent className="py-12">
+                <div className="text-center">
+                  <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    Немає stories
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    {(() => {
+                      if (typeof window === 'undefined') return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити story'
+                      const savedCharts = localStorage.getItem('userCharts')
+                      if (savedCharts) {
+                        try {
+                          const charts = JSON.parse(savedCharts)
+                          if (charts.length === 0) {
+                            return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити story'
+                          }
+                        } catch (error) {
+                          return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити story'
+                        }
+                      }
+                      return 'Спочатку створіть хоча б один чарт на головній сторінці, щоб створити story'
+                    })()}
+                  </p>
+                  <Button onClick={handleCreateStory}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Створити першу Story
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   )

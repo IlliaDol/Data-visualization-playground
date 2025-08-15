@@ -544,7 +544,7 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
               <div className="bg-muted p-4 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <CheckCircle className="h-5 w-5 text-success-600" />
-                  <h4 className="font-medium text-green-900 dark:text-green-100">
+                                      <h4 className="font-medium text-foreground">
                     AI Анализ завершен
                   </h4>
                 </div>
@@ -561,13 +561,13 @@ export function AIAgent({ dataProfile, onChartSuggestion, onAnalysisComplete }: 
                     </span>
                   </div>
                   
-                  <div className="text-sm text-green-700 dark:text-green-300 mb-2">
+                  <div className="text-sm text-muted-foreground mb-2">
                     <strong>Поля:</strong> X: {analysisResult.xField || 'не выбрано'}, 
                     Y: {analysisResult.yField || 'не выбрано'}
                     {analysisResult.colorField && `, Цвет: ${analysisResult.colorField}`}
                   </div>
                   
-                  <div className="text-sm text-green-700 dark:text-green-300">
+                  <div className="text-sm text-muted-foreground">
                     <strong>Обоснование:</strong> {analysisResult.reasoning}
                   </div>
                 </div>

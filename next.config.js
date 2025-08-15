@@ -3,7 +3,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Enable static export for GitHub Pages
+  // output: 'export', // Temporarily disabled for dynamic routes
   trailingSlash: true,
   images: { unoptimized: true },
   basePath: isProd ? `/${repo}` : '', // Enable for GitHub Pages

@@ -94,7 +94,7 @@ export function ShareFork({ chartSpec, className = '' }: ShareForkProps) {
                   className="flex items-center gap-2"
                 >
                   {copied ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-success-600" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}

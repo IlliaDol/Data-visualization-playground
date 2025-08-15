@@ -99,6 +99,17 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
       dataProfile: dataProfile.name
     })
 
+    // Validate required fields
+    if (!xField) {
+      alert('❌ Будь ласка, виберіть поле для осі X')
+      return
+    }
+
+    if (!yField && selectedChartType !== 'pie') {
+      alert('❌ Будь ласка, виберіть поле для осі Y')
+      return
+    }
+
     const chartSpec: ChartSpec = {
       id: Math.random().toString(36).substr(2, 9),
       title: chartTitle,
@@ -125,7 +136,19 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
     }
 
     console.log('Chart spec created:', chartSpec)
-    onChartCreated(chartSpec)
+    
+    try {
+      onChartCreated(chartSpec)
+      alert(`✅ Чарт "${chartTitle}" створено успішно! Перенаправлення на Dashboard...`)
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = '/dashboards'
+      }, 1500)
+    } catch (error) {
+      console.error('Error creating chart:', error)
+      alert(`❌ Помилка створення чарту: ${error}`)
+    }
   }
 
   const handleAIAssist = async () => {
@@ -359,10 +382,30 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
 
   return (
     <div className="space-y-6">
-                  <Card className="bg-card border-border">
+      {/* Helpful message when no data is available */}
+      {(!dataProfile || !dataProfile.fields || dataProfile.fields.length === 0) && (
+        <Card className="bg-card border-border">
+          <CardContent className="py-8">
+            <div className="text-center">
+              <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                Завантажте дані для створення чарту
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Спочатку завантажте файл з даними (CSV, Excel, JSON, тощо) щоб почати створювати візуалізації.
+              </p>
+              <div className="text-sm text-muted-foreground">
+                Підтримувані формати: CSV, TSV, Excel (.xlsx), JSON, XML, YAML, TOML, LOG, Parquet, NumPy
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card className="bg-card border-border">
         <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-foreground">
-                          <BarChart3 className="h-5 w-5 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-foreground">
+            <BarChart3 className="h-5 w-5 text-primary" />
             Chart Builder
           </CardTitle>
         </CardHeader>
@@ -472,13 +515,33 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3">
+            {/* Helpful message when fields are not selected */}
+            {(!xField || (!yField && selectedChartType !== 'pie')) && (
+              <div className="w-full mb-2 p-3 bg-muted/50 border border-border rounded-md">
+                <div className="text-sm text-muted-foreground">
+                  <strong>💡 Щоб створити чарт:</strong>
+                  <ul className="mt-1 space-y-1">
+                    {!xField && <li>• Виберіть поле для осі X (категорії або дати)</li>}
+                    {(!yField && selectedChartType !== 'pie') && <li>• Виберіть поле для осі Y (числові значення)</li>}
+                  </ul>
+                </div>
+              </div>
+            )}
+            
             <Button
               onClick={handleCreateChart}
               disabled={!xField || (!yField && selectedChartType !== 'pie')}
               className="flex items-center gap-2"
+              title={
+                !xField ? 'Виберіть поле для осі X' :
+                (!yField && selectedChartType !== 'pie') ? 'Виберіть поле для осі Y' :
+                'Створити чарт'
+              }
             >
               <BarChart3 className="h-4 w-4" />
-              Create Chart
+              {!xField ? 'Виберіть X поле' :
+               (!yField && selectedChartType !== 'pie') ? 'Виберіть Y поле' :
+               'Create Chart'}
             </Button>
             
             <Button
