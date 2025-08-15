@@ -30,6 +30,7 @@ import {
 import { DataProfile, ChartSpec, ChartMark } from '@/types'
 import { generatePythonCode, generateRCode, generateImageExportCode, downloadFile } from '@/lib/utils'
 import { ChartRenderer } from './ChartRenderer'
+import { AIAgent } from './AIAgent'
 
 interface ChartBuilderProps {
   dataProfile: DataProfile
@@ -66,6 +67,7 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
   const [isExporting, setIsExporting] = useState(false)
   const [analysisPrompt, setAnalysisPrompt] = useState('')
   const [showAnalysisDetails, setShowAnalysisDetails] = useState(false)
+  const [aiAnalysisResult, setAiAnalysisResult] = useState<any>(null)
 
   // Auto-select fields based on data types
   React.useEffect(() => {
@@ -127,191 +129,26 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
   }
 
   const handleAIAssist = async () => {
-    setIsGenerating(true)
+    // This function is now handled by AIAgent component
+    console.log('AI Assist called - handled by AIAgent component')
+  }
+
+  const handleAIChartSuggestion = (chartSpec: ChartSpec) => {
+    // Apply AI suggestions to the form
+    setSelectedChartType(chartSpec.mark)
+    setXField(chartSpec.encoding.x?.field || '')
+    setYField(chartSpec.encoding.y?.field || '')
+    setColorField(chartSpec.encoding.color?.field || '')
+    setChartTitle(chartSpec.title)
     
-    // Simulate AI processing
-    setTimeout(() => {
-      // AI analyzes data and suggests best chart type
-      console.log('AI analyzing data profile:', dataProfile)
-      console.log('User analysis prompt:', analysisPrompt)
-      
-      // Визначаємо типи полів на основі даних
-      const numericFields = dataProfile.fields.filter(f => {
-        // Перевіряємо чи поле містить числові значення
-        const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
-        return sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
-      })
-      
-      const categoricalFields = dataProfile.fields.filter(f => {
-        // Поля які не є числовими
-        const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
-        return !sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
-      })
-      
-      console.log('Numeric fields:', numericFields.map(f => f.name))
-      console.log('Categorical fields:', categoricalFields.map(f => f.name))
-      
-      let suggestedChartType = 'bar'
-      let suggestedXField = ''
-      let suggestedYField = ''
-      let suggestedColorField = ''
-      
-      // Аналізуємо запит користувача
-      const userPrompt = analysisPrompt.toLowerCase()
-      let userIntent = ''
-      
-      if (userPrompt.includes('розподіл') || userPrompt.includes('distribution')) {
-        userIntent = 'distribution'
-      } else if (userPrompt.includes('кореляці') || userPrompt.includes('correlation') || userPrompt.includes('зв\'язок')) {
-        userIntent = 'correlation'
-      } else if (userPrompt.includes('тренд') || userPrompt.includes('trend') || userPrompt.includes('час')) {
-        userIntent = 'trend'
-      } else if (userPrompt.includes('порівнян') || userPrompt.includes('compare') || userPrompt.includes('категорі')) {
-        userIntent = 'comparison'
-      } else if (userPrompt.includes('пропорці') || userPrompt.includes('proportion') || userPrompt.includes('частка')) {
-        userIntent = 'proportion'
-      } else if (userPrompt.includes('імен') || userPrompt.includes('name')) {
-        userIntent = 'names'
-      } else if (userPrompt.includes('користувач') || userPrompt.includes('user')) {
-        userIntent = 'users'
-      }
-      
-      console.log('User intent detected:', userIntent)
-      
-      // AI Logic for chart type selection
-      console.log('AI Analysis - Available fields:', {
-        categorical: categoricalFields.map(f => f.name),
-        numeric: numericFields.map(f => f.name),
-        all: dataProfile.fields.map(f => ({ name: f.name, type: f.type }))
-      })
-      
-      // Визначаємо тип чарту на основі наміру користувача та доступних полів
-      if (userIntent === 'distribution' && numericFields.length > 0) {
-        suggestedChartType = 'histogram'
-        suggestedXField = numericFields[0].name
-        suggestedYField = numericFields[0].name
-      } else if (userIntent === 'correlation' && numericFields.length >= 2) {
-        suggestedChartType = 'scatter'
-        suggestedXField = numericFields[0].name
-        suggestedYField = numericFields[1].name
-      } else if (userIntent === 'trend' && categoricalFields.length > 0 && numericFields.length > 0) {
-        suggestedChartType = 'line'
-        suggestedXField = categoricalFields[0].name
-        suggestedYField = numericFields[0].name
-      } else if (userIntent === 'proportion' && categoricalFields.length > 0) {
-        suggestedChartType = 'pie'
-        suggestedXField = categoricalFields[0].name
-        suggestedYField = ''
-      } else if (userIntent === 'names' || userIntent === 'users') {
-        // Шукаємо поля з іменами
-        const nameFields = categoricalFields.filter(f => 
-          f.name.toLowerCase().includes('name') || 
-          f.name.toLowerCase().includes('first') || 
-          f.name.toLowerCase().includes('last') ||
-          f.name.toLowerCase().includes('user')
-        )
-        if (nameFields.length > 0) {
-          suggestedChartType = 'pie'
-          suggestedXField = nameFields[0].name
-          suggestedYField = ''
-        }
-      } else if (userIntent === 'comparison' && categoricalFields.length > 0) {
-        suggestedChartType = 'bar'
-        suggestedXField = categoricalFields[0].name
-        if (numericFields.length > 0) {
-          suggestedYField = numericFields[0].name
-        } else {
-          suggestedYField = '' // Буде підраховано автоматично
-        }
-      } else {
-        // Стандартна логіка якщо намір не визначено
-        if (categoricalFields.length > 0 && numericFields.length > 0) {
-          // Є і категоріальні і числові поля - ідеально для bar chart
-          suggestedChartType = 'bar'
-          suggestedXField = categoricalFields[0].name
-          suggestedYField = numericFields[0].name
-          
-          if (categoricalFields.length > 1) {
-            suggestedColorField = categoricalFields[1].name
-          }
-        } else if (numericFields.length >= 2) {
-          // Два або більше числових полів - scatter plot
-          suggestedChartType = 'scatter'
-          suggestedXField = numericFields[0].name
-          suggestedYField = numericFields[1].name
-          
-          if (categoricalFields.length > 0) {
-            suggestedColorField = categoricalFields[0].name
-          }
-        } else if (numericFields.length === 1) {
-          // Тільки одне числове поле - histogram
-          suggestedChartType = 'histogram'
-          suggestedXField = numericFields[0].name
-          suggestedYField = numericFields[0].name
-        } else if (categoricalFields.length >= 2) {
-          // Два або більше категоріальних полів - pie chart для пропорцій
-          suggestedChartType = 'pie'
-          suggestedXField = categoricalFields[0].name
-          suggestedYField = ''
-        } else if (categoricalFields.length === 1) {
-          // Тільки одне категоріальне поле - bar chart з підрахунком
-          suggestedChartType = 'bar'
-          suggestedXField = categoricalFields[0].name
-          suggestedYField = ''
-        } else {
-          // Fallback - використовуємо перші два поля
-          if (dataProfile.fields.length >= 2) {
-            suggestedXField = dataProfile.fields[0].name
-            suggestedYField = dataProfile.fields[1].name
-          } else if (dataProfile.fields.length === 1) {
-            suggestedXField = dataProfile.fields[0].name
-            suggestedYField = dataProfile.fields[0].name
-          }
-        }
-      }
-      
-      console.log('AI suggestions:', {
-        chartType: suggestedChartType,
-        xField: suggestedXField,
-        yField: suggestedYField,
-        colorField: suggestedColorField
-      })
-      
-      // Apply AI suggestions
-      setSelectedChartType(suggestedChartType)
-      setXField(suggestedXField)
-      setYField(suggestedYField)
-      setColorField(suggestedColorField)
-      
-      setChartTitle(`AI Suggested ${suggestedChartType.charAt(0).toUpperCase() + suggestedChartType.slice(1)} - ${dataProfile.name}`)
-      
-      // Автоматично показуємо превью якщо є X та Y поля
-      if (suggestedXField && suggestedYField) {
-        setShowPreview(true)
-      }
-      
-      // Показуємо повідомлення про успішний аналіз
-      let message = `✅ AI аналіз завершено!\n\n`
-      
-      if (userIntent) {
-        message += `🎯 Розпізнано намір: ${userIntent}\n`
-      }
-      
-      message += `📊 Рекомендований тип чарту: ${suggestedChartType}\n`
-      message += `📈 X Axis: ${suggestedXField}\n`
-      if (suggestedYField) {
-        message += `📉 Y Axis: ${suggestedYField}\n`
-      }
-      if (suggestedColorField) {
-        message += `🎨 Color: ${suggestedColorField}\n`
-      }
-      
-      message += `\nТепер ви можете створити чарт!`
-      
-      alert(message)
-      
-      setIsGenerating(false)
-    }, 2000)
+    // Show preview if we have X and Y fields
+    if (chartSpec.encoding.x?.field && chartSpec.encoding.y?.field) {
+      setShowPreview(true)
+    }
+  }
+
+  const handleAIAnalysisComplete = (result: any) => {
+    setAiAnalysisResult(result)
   }
 
   const handleExportCode = (language: 'python' | 'r', library?: string) => {
@@ -626,86 +463,11 @@ export function ChartBuilder({ dataProfile, onChartCreated }: ChartBuilderProps)
 
           {/* AI Analysis Section */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <h3 className="text-sm font-medium mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              AI Auto-Analysis
-            </h3>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Що ви хочете проаналізувати? (необов&apos;язково)
-                </label>
-                <textarea
-                  value={analysisPrompt}
-                  onChange={(e) => setAnalysisPrompt(e.target.value)}
-                  placeholder="Наприклад: 
-• Покажи розподіл користувачів за іменами
-• Знайди кореляції між полями  
-• Покажи тренди за часом
-• Порівняй категорії
-• Покажи пропорції"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  rows={3}
-                />
-              </div>
-              
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  onClick={() => handleAIAssist()}
-                  disabled={isGenerating}
-                  className="flex items-center gap-2"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  {isGenerating ? 'AI Thinking...' : 'AI Auto-Analysis'}
-                </Button>
-                
-                <Button
-                  onClick={() => setAnalysisPrompt('')}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  Очистити
-                </Button>
-              </div>
-              
-              {/* Quick Examples */}
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  onClick={() => setAnalysisPrompt('Покажи розподіл користувачів за іменами')}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Розподіл імен
-                </Button>
-                <Button
-                  onClick={() => setAnalysisPrompt('Знайди кореляції між полями')}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Кореляції
-                </Button>
-                <Button
-                  onClick={() => setAnalysisPrompt('Покажи тренди за часом')}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Тренди
-                </Button>
-                <Button
-                  onClick={() => setAnalysisPrompt('Порівняй категорії')}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Порівняння
-                </Button>
-              </div>
-            </div>
+            <AIAgent 
+              dataProfile={dataProfile}
+              onChartSuggestion={handleAIChartSuggestion}
+              onAnalysisComplete={handleAIAnalysisComplete}
+            />
           </div>
 
           {/* Actions */}

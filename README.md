@@ -1,84 +1,92 @@
-# Data Visualization Playground
+# DataViz AI Playground 🚀
 
-🚀 **Universal Data Visualization Platform with AI Assistance and Code Export**
+**AI-powered data visualization platform with support for 20+ file formats**
 
-A comprehensive, production-ready data visualization playground that supports multiple data formats, AI-powered insights, interactive dashboards, and code export in Python and R.
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![AI Enhanced](https://img.shields.io/badge/AI-Enhanced-purple?style=for-the-badge&logo=openai)](https://openai.com/)
 
 ## ✨ Features
 
-### 🎯 Core Features
-- **Universal Data Import**: CSV, Excel, JSON, TSV, Parquet, Arrow
-- **AI-Powered Insights**: Intelligent chart recommendations and data analysis
-- **Interactive Charts**: 12+ chart types with real-time customization
-- **Code Export**: Generate production-ready code in Python (Plotly, Matplotlib) and R (ggplot2, Plotly)
-- **Dashboard Builder**: Create interactive dashboards with filters and cross-filtering
-- **Story Mode**: Build narrative visualizations with auto-generated insights
-- **Real-time Collaboration**: Share and collaborate on visualizations
+### 🤖 AI-Powered Analysis
+- **Intelligent Chart Recommendations**: AI analyzes your data and suggests the best chart types
+- **Automatic Field Detection**: Smart detection of numeric, categorical, and temporal data
+- **Statistical Insights**: Get recommendations for statistical tests and analysis methods
+- **Pattern Recognition**: AI identifies correlations, trends, and data patterns
+- **Natural Language Queries**: Ask questions about your data in plain language
 
-### 🎨 Visualization Types
-- **Basic Charts**: Bar, Line, Area, Scatter, Bubble, Pie, Doughnut
-- **Statistical**: Box Plot, Violin Plot, Histogram, Density Plot
-- **Advanced**: Heatmap, Treemap, Sankey Diagram, Candlestick
-- **Geographic**: Choropleth Maps, Point Maps, Hexbin Maps
-- **Time Series**: Advanced temporal visualizations with seasonality detection
+### 📁 Universal File Format Support
+Support for **20+ file formats**:
 
-### 🤖 AI Capabilities
-- **Smart Chart Recommendations**: AI suggests optimal chart types based on data
-- **Natural Language Processing**: "Show me sales trends by region" → automatic chart generation
-- **Data Insights**: Automatic correlation analysis, outlier detection, trend identification
-- **Code Generation**: AI generates clean, production-ready code for any visualization
+#### Text Formats
+- **CSV/TSV**: Comma and tab-separated values
+- **JSON/JSON-LD**: JavaScript Object Notation
+- **XML**: Extensible Markup Language
+- **YAML/TOML**: Configuration file formats
+- **INI/CFG**: Configuration files
+- **LOG**: Log files with automatic parsing
 
-### 📊 Data Processing
-- **Advanced Profiling**: Automatic type detection, missing value analysis, correlation matrices
-- **Data Transformation**: Filter, sort, aggregate, pivot, join operations
-- **Data Validation**: Quality checks with customizable rules
-- **Real-time Processing**: Handle files up to 200MB with streaming support
+#### Spreadsheet Formats
+- **Excel**: .xlsx, .xls, .xlsm files
+- **Google Sheets**: Import via CSV export
 
-## 🛠 Tech Stack
+#### Data Science Formats
+- **Parquet**: Columnar data format
+- **NumPy**: .npz, .npy files
+- **Pickle**: Python serialized objects
+- **HDF5**: Hierarchical Data Format
+- **Feather**: Fast binary format
+- **Arrow**: Apache Arrow format
+- **Avro**: Apache Avro format
+- **ORC**: Optimized Row Columnar format
 
-### Frontend
-- **Next.js 14** (App Router) with TypeScript
-- **React 18** with modern hooks and patterns
-- **Tailwind CSS** with custom design system
-- **shadcn/ui** components for consistent UI
-- **Framer Motion** for smooth animations
+#### Compressed Formats
+- **GZIP**: .gz, .gzip files
+- **ZIP**: Compressed archives
 
-### Data Processing
-- **DuckDB-WASM** for in-browser SQL processing
-- **Apache Arrow** for efficient data handling
-- **PapaParse** for CSV parsing
-- **SheetJS** for Excel file support
+### 📊 Advanced Chart Types
+16+ chart types including:
+- **Bar Charts**: Vertical, horizontal, stacked
+- **Line Charts**: Time series and trends
+- **Scatter Plots**: Correlation analysis
+- **Pie Charts**: Proportions and distributions
+- **Histograms**: Data distributions
+- **Box Plots**: Statistical summaries
+- **Heatmaps**: Correlation matrices
+- **Gauge Charts**: KPIs and metrics
+- **Bubble Charts**: 3D scatter plots
+- **Waterfall Charts**: Cumulative effects
+- **Funnel Charts**: Conversion processes
+- **Radar Charts**: Multi-dimensional data
+- **Tree Maps**: Hierarchical data
+- **Sankey Diagrams**: Flow visualization
 
-### Visualization Libraries
-- **Vega-Lite** for declarative chart specifications
-- **Plotly.js** for interactive charts
-- **D3.js** for custom visualizations
-- **MapLibre GL** for geographic visualizations
+### 💻 Code Export
+Export your visualizations as production-ready code:
+- **Python**: Plotly, Matplotlib
+- **R**: ggplot2, Plotly
+- **Image Export**: PNG, SVG, PDF
 
-### AI Integration
-- **OpenAI GPT-4** for natural language processing
-- **Anthropic Claude** for advanced reasoning
-- **DeepSeek** for specialized data analysis
-- **Local LLM** support via OpenAI-compatible APIs
-
-### State Management
-- **Zustand** for global state
-- **React Query** for server state
-- **React Hook Form** for form management
+### 🎨 Modern UI/UX
+- **Dark/Light Mode**: Automatic theme switching
+- **Responsive Design**: Works on all devices
+- **Interactive Charts**: Hover effects and animations
+- **Real-time Preview**: See changes instantly
+- **Drag & Drop**: Easy file upload
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Git
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/data-viz-playground.git
-cd data-viz-playground
+git clone https://github.com/yourusername/data-viz-ai-playground.git
+cd data-viz-ai-playground
 ```
 
 2. **Install dependencies**
@@ -88,182 +96,181 @@ npm install
 yarn install
 ```
 
-3. **Set up environment variables**
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` and add your API keys:
-```env
-# AI Providers
-OPENAI_API_KEY=your_openai_key
-ANTHROPIC_API_KEY=your_anthropic_key
-DEEPSEEK_API_KEY=your_deepseek_key
-
-# Optional: Backend services
-DATABASE_URL=your_database_url
-REDIS_URL=your_redis_url
-```
-
-4. **Run the development server**
+3. **Run the development server**
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-5. **Open your browser**
+4. **Open your browser**
 Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📖 Usage Guide
 
 ### 1. Upload Your Data
-- Drag and drop CSV, Excel, or JSON files
-- Or use the sample datasets provided
-- Files up to 200MB are supported
+- Drag & drop files or click to browse
+- Supported formats: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, and more
+- Files up to 200MB supported
 
-### 2. Explore Your Data
-- View automatic data profiling results
-- See field types, missing values, correlations
-- Get AI-powered insights about your data
+### 2. AI Analysis
+- **Automatic Analysis**: AI analyzes your data structure and suggests charts
+- **Natural Language**: Ask questions like "Show me trends" or "Find correlations"
+- **Quick Actions**: Use preset analysis options
+- **Statistical Insights**: Get recommendations for statistical tests
 
 ### 3. Create Visualizations
-- Choose from 12+ chart types
-- Use AI assistance for chart recommendations
-- Customize colors, axes, and styling
-- Add filters and interactions
+- **AI Suggestions**: Let AI choose the best chart type and fields
+- **Manual Control**: Select chart type and fields manually
+- **Real-time Preview**: See your chart as you build it
+- **Customization**: Adjust colors, titles, and styling
 
-### 4. Export and Share
-- Export charts as PNG, SVG, or PDF
-- Generate Python code (Plotly/Matplotlib)
-- Generate R code (ggplot2/Plotly)
-- Share interactive dashboards
+### 4. Export & Share
+- **Code Export**: Get Python or R code for your charts
+- **Image Export**: Save as PNG, SVG, or PDF
+- **Dashboard View**: View all your created charts
 
-### 5. Build Dashboards
-- Combine multiple charts
-- Add interactive filters
-- Create cross-filtering relationships
-- Share with team members
+## 🤖 AI Features Deep Dive
 
-## 🏗 Architecture
+### Intelligent Data Analysis
+The AI agent performs comprehensive data analysis:
+
+1. **Data Structure Analysis**
+   - Field type detection (numeric, categorical, temporal)
+   - Missing value analysis
+   - Data quality assessment
+   - Sample size evaluation
+
+2. **Pattern Recognition**
+   - Time series detection
+   - Geographic data identification
+   - Hierarchical data structures
+   - Correlation patterns
+
+3. **Chart Recommendations**
+   - Optimal chart type selection
+   - Field mapping suggestions
+   - Color encoding recommendations
+   - Statistical test suggestions
+
+### Natural Language Processing
+Ask questions in plain language:
+- "Show me the distribution of users by name"
+- "Find correlations between fields"
+- "Display trends over time"
+- "Compare categories"
+- "Show proportions"
+
+### Statistical Insights
+Get recommendations for:
+- **Descriptive Statistics**: Mean, median, standard deviation
+- **Correlation Analysis**: Pearson, Spearman correlations
+- **Hypothesis Testing**: t-tests, ANOVA, chi-square tests
+- **Regression Analysis**: Linear, polynomial regression
+- **Time Series Analysis**: ARIMA, seasonal decomposition
+
+## 🛠️ Technical Architecture
+
+### Frontend
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling
+- **Lucide Icons**: Beautiful icon library
+- **Recharts**: Chart rendering library
+
+### AI Components
+- **AIAgent**: Core AI analysis engine
+- **Data Profiling**: Automatic field type detection
+- **Pattern Recognition**: Data structure analysis
+- **Chart Recommendations**: Intelligent suggestions
+
+### File Processing
+- **Universal Parser**: Handles 20+ file formats
+- **Format Detection**: Automatic file type recognition
+- **Data Validation**: Quality checks and error handling
+- **Compression Support**: GZIP and ZIP file handling
+
+## 📁 Project Structure
 
 ```
-src/
+data-viz-ai-playground/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
 │   ├── dashboards/        # Dashboard pages
-│   ├── stories/           # Story mode pages
-│   └── api/               # API routes
+│   ├── settings/          # Settings pages
+│   ├── stories/           # Story pages
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
 ├── components/            # React components
-│   ├── ui/               # Base UI components
-│   ├── FileUpload.tsx    # File upload component
-│   ├── ChartBuilder.tsx  # Chart creation interface
-│   ├── Dashboard.tsx     # Dashboard builder
-│   └── Navigation.tsx    # Main navigation
+│   ├── ui/               # UI components
+│   ├── AIAgent.tsx       # AI analysis engine
+│   ├── AIAssistant.tsx   # AI chat interface
+│   ├── ChartBuilder.tsx  # Chart creation
+│   ├── ChartRenderer.tsx # Chart rendering
+│   ├── DataProfile.tsx   # Data profiling
+│   ├── FileUpload.tsx    # File upload
+│   └── Navigation.tsx    # Navigation
 ├── lib/                  # Utility functions
-│   ├── utils.ts          # General utilities
-│   ├── ai.ts             # AI integration
-│   ├── charts.ts         # Chart processing
-│   └── data.ts           # Data processing
-├── types/                # TypeScript definitions
-├── hooks/                # Custom React hooks
-├── store/                # Zustand stores
-└── i18n/                 # Internationalization
+│   ├── utils.ts          # File parsing & utilities
+│   └── i18n.ts           # Internationalization
+├── types/                # TypeScript types
+│   └── index.ts          # Type definitions
+└── public/               # Static assets
 ```
 
 ## 🔧 Configuration
 
-### Chart Configuration
-Charts are defined using a Vega-Lite inspired specification:
-
-```typescript
-interface ChartSpec {
-  id: string;
-  title: string;
-  data: { sourceId: string; transform?: TransformStep[] };
-  mark: ChartMark;
-  encoding: ChartEncoding;
-  config: ChartConfig;
-}
-```
-
-### AI Configuration
-Configure AI providers in your environment:
+### Environment Variables
+Create a `.env.local` file:
 
 ```env
-# OpenAI
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4
+# Optional: Analytics
+NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
 
-# Anthropic
-ANTHROPIC_API_KEY=sk-ant-...
-ANTHROPIC_MODEL=claude-3-sonnet
-
-# DeepSeek
-DEEPSEEK_API_KEY=sk-...
-DEEPSEEK_MODEL=deepseek-chat
+# Optional: AI API (for future enhancements)
+AI_API_KEY=your_ai_api_key
 ```
 
-## 🧪 Testing
+### Customization
+- **Themes**: Modify `tailwind.config.js` for custom colors
+- **Charts**: Add new chart types in `ChartRenderer.tsx`
+- **File Formats**: Extend parsers in `lib/utils.ts`
+- **AI Logic**: Customize analysis in `AIAgent.tsx`
 
-### Run Tests
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
-```
-
-### Test Coverage
-```bash
-npm run test:coverage
-```
-
-## 📦 Deployment
+## 🚀 Deployment
 
 ### Vercel (Recommended)
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
+```bash
+npm install -g vercel
+vercel
+```
 
 ### Docker
 ```bash
-# Build image
-docker build -t data-viz-playground .
-
-# Run container
-docker run -p 3000:3000 data-viz-playground
+docker build -t data-viz-ai .
+docker run -p 3000:3000 data-viz-ai
 ```
 
 ### Manual Deployment
 ```bash
-# Build for production
 npm run build
-
-# Start production server
 npm start
 ```
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests for new functionality
-5. Commit your changes: `git commit -m 'Add amazing feature'`
-6. Push to the branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Use Tailwind CSS for styling
+- Write comprehensive tests
+- Update documentation
+- Follow conventional commits
 
 ## 📄 License
 
@@ -271,38 +278,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Vega-Lite](https://vega.github.io/vega-lite/) for declarative visualization grammar
-- [DuckDB](https://duckdb.org/) for in-browser SQL processing
-- [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
-- [Tailwind CSS](https://tailwindcss.com/) for utility-first CSS
+- **Next.js Team**: For the amazing framework
+- **Tailwind CSS**: For the utility-first CSS framework
+- **Recharts**: For the chart library
+- **Lucide**: For the beautiful icons
+- **OpenAI**: For AI inspiration
 
 ## 📞 Support
 
-- 📧 Email: support@datavizplayground.com
-- 💬 Discord: [Join our community](https://discord.gg/dataviz)
-- 📖 Documentation: [docs.datavizplayground.com](https://docs.datavizplayground.com)
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/data-viz-playground/issues)
-
-## 🗺 Roadmap
-
-### v1.1 (Q1 2024)
-- [ ] Advanced geographic visualizations
-- [ ] Real-time data streaming
-- [ ] Custom chart types
-- [ ] Advanced AI features
-
-### v1.2 (Q2 2024)
-- [ ] Team collaboration features
-- [ ] Advanced data transformations
-- [ ] Machine learning integration
-- [ ] Mobile app
-
-### v2.0 (Q3 2024)
-- [ ] Enterprise features
-- [ ] Advanced security
-- [ ] Custom branding
-- [ ] API for developers
+- **Issues**: [GitHub Issues](https://github.com/yourusername/data-viz-ai-playground/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/data-viz-ai-playground/discussions)
+- **Email**: support@dataviz-ai.com
 
 ---
 
-**Made with ❤️ by the DataViz Playground Team**
+**Made with ❤️ by the DataViz AI Team**
+
+*Transform your data into insights with AI-powered visualization!*

@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatFileSize, parseCSV, parseExcel, parseJSON } from '@/lib/utils'
+import { formatFileSize, parseFile, detectFileFormat, isFileSupported } from '@/lib/utils'
 import { DataProfile, FileUpload as FileUploadType } from '@/types'
 
 interface FileUploadProps {
@@ -14,11 +14,49 @@ interface FileUploadProps {
 }
 
 const ACCEPTED_FILE_TYPES = {
+  // Текстовые форматы
   'text/csv': ['.csv'],
+  'text/tab-separated-values': ['.tsv', '.tab'],
+  'text/plain': ['.txt', '.log', '.dat'],
+  
+  // Excel форматы
   'application/vnd.ms-excel': ['.xls'],
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx', '.xlsm'],
+  
+  // JSON форматы
   'application/json': ['.json'],
-  'text/plain': ['.tsv', '.txt']
+  'application/ld+json': ['.jsonld'],
+  
+  // XML форматы
+  'application/xml': ['.xml'],
+  'text/xml': ['.xml'],
+  
+  // Сжатые форматы
+  'application/gzip': ['.gz', '.gzip'],
+  'application/x-gzip': ['.gz'],
+  'application/zip': ['.zip'],
+  'application/x-zip-compressed': ['.zip'],
+  
+  // Специальные форматы
+  'application/parquet': ['.parquet'],
+  'application/numpy': ['.npz', '.npy'],
+  'application/pickle': ['.pkl', '.pickle'],
+  'application/hdf5': ['.h5', '.hdf5'],
+  'application/feather': ['.feather'],
+  'application/arrow': ['.arrow'],
+  'application/avro': ['.avro'],
+  'application/orc': ['.orc'],
+  
+  // Логи и системные файлы
+  'text/log': ['.log'],
+  'application/log': ['.log'],
+  
+  // Другие форматы
+  'text/yaml': ['.yaml', '.yml'],
+  'text/toml': ['.toml'],
+  'application/toml': ['.toml'],
+  'text/ini': ['.ini', '.cfg', '.conf'],
+  'application/ini': ['.ini', '.cfg', '.conf']
 }
 
 export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
@@ -51,27 +89,23 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
       let data: Record<string, any>[]
       let fields: string[]
 
-      // Parse file based on type
-      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
-        console.log('Parsing CSV file...')
-        const result = await parseCSV(file)
+      // Check if file is supported
+      if (!isFileSupported(file)) {
+        throw new Error(`Unsupported file format: ${file.name}. Supported formats: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, and more.`)
+      }
+
+      // Detect file format and parse
+      const format = detectFileFormat(file)
+      console.log(`Parsing ${format.toUpperCase()} file: ${file.name}`)
+      
+      try {
+        const result = await parseFile(file)
         data = result.data
         fields = result.fields
-        console.log('CSV parsed successfully:', { rows: data.length, fields })
-      } else if (file.type.includes('excel') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-        console.log('Parsing Excel file...')
-        const result = await parseExcel(file)
-        data = result.data
-        fields = result.fields
-        console.log('Excel parsed successfully:', { rows: data.length, fields })
-      } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
-        console.log('Parsing JSON file...')
-        const result = await parseJSON(file)
-        data = result.data
-        fields = result.fields
-        console.log('JSON parsed successfully:', { rows: data.length, fields })
-      } else {
-        throw new Error(`Unsupported file type: ${file.type}`)
+        console.log(`${format.toUpperCase()} parsed successfully:`, { rows: data.length, fields })
+      } catch (error) {
+        console.error(`Error parsing ${format} file:`, error)
+        throw new Error(`Failed to parse ${format} file: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
 
       // Create data profile
@@ -92,8 +126,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
         createdAt: new Date(),
         updatedAt: new Date(),
         size: file.size,
-        format: file.type.includes('csv') ? 'csv' : 
-                file.type.includes('excel') ? 'xlsx' : 'json',
+        format: format,
         sampleData: data.slice(0, 10)
       }
 
@@ -203,7 +236,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
                   Drag & drop files here, or click to select
                 </p>
                 <p className="text-sm text-gray-500 mb-4">
-                  Supports CSV, Excel, JSON files up to 200MB
+                  Supports CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, and more formats up to 200MB
                 </p>
                 <Button variant="outline">
                   Choose Files
@@ -215,18 +248,38 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
           {/* Інструкції для завантаження */}
           <div className="mt-6">
             <h3 className="text-sm font-medium mb-3">Підтримувані формати:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="text-center p-3 border rounded-lg">
-                <span className="font-medium">CSV</span>
-                <p className="text-xs text-gray-500">Comma-separated values</p>
+                <span className="font-medium">CSV/TSV</span>
+                <p className="text-xs text-gray-500">Comma/tab-separated values</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
                 <span className="font-medium">Excel</span>
-                <p className="text-xs text-gray-500">.xlsx, .xls files</p>
+                <p className="text-xs text-gray-500">.xlsx, .xls, .xlsm files</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
-                <span className="font-medium">JSON</span>
-                <p className="text-xs text-gray-500">JavaScript Object Notation</p>
+                <span className="font-medium">JSON/XML</span>
+                <p className="text-xs text-gray-500">Structured data formats</p>
+              </div>
+              <div className="text-center p-3 border rounded-lg">
+                <span className="font-medium">YAML/TOML</span>
+                <p className="text-xs text-gray-500">Configuration files</p>
+              </div>
+              <div className="text-center p-3 border rounded-lg">
+                <span className="font-medium">LOG</span>
+                <p className="text-xs text-gray-500">Log files</p>
+              </div>
+              <div className="text-center p-3 border rounded-lg">
+                <span className="font-medium">Parquet</span>
+                <p className="text-xs text-gray-500">Columnar data format</p>
+              </div>
+              <div className="text-center p-3 border rounded-lg">
+                <span className="font-medium">NumPy</span>
+                <p className="text-xs text-gray-500">.npz, .npy files</p>
+              </div>
+              <div className="text-center p-3 border rounded-lg">
+                <span className="font-medium">Compressed</span>
+                <p className="text-xs text-gray-500">.gz, .zip files</p>
               </div>
             </div>
           </div>
@@ -378,7 +431,7 @@ export function FileUpload({ onFileProcessed, onError }: FileUploadProps) {
               </p>
               <div className="space-y-3">
                 <p className="text-xs text-gray-500">
-                  Підтримуються формати: CSV, Excel (.xlsx, .xls), JSON
+                  Підтримуються формати: CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, та інші
                 </p>
               </div>
             </div>

@@ -7,12 +7,13 @@ import { AIAssistant } from '@/components/AIAssistant'
 import { DataProfile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart3, FileText, Share2, Download, Eye, Settings, BookOpen } from 'lucide-react'
+import { BarChart3, FileText, Share2, Download, Eye, Settings, BookOpen, Brain, Sparkles, Database, Zap } from 'lucide-react'
 
 export default function HomePage() {
   const [dataProfile, setDataProfile] = useState<DataProfile | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [createdCharts, setCreatedCharts] = useState<any[]>([])
+  const [aiAnalysisResult, setAiAnalysisResult] = useState<any>(null)
 
   // Завантажуємо збережені чарти при ініціалізації
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function HomePage() {
   const handleDataUploaded = (profile: DataProfile) => {
     setDataProfile(profile)
     setShowPreview(false)
+    setAiAnalysisResult(null) // Сбрасываем предыдущий анализ
   }
 
   const handleFileError = (error: string) => {
@@ -94,8 +96,40 @@ export default function HomePage() {
     alert(`🎯 AI ОБОВ'ЯЗКОВО ВИБРАВ ОБИДВІ ОСІ!\n\n📊 Тип чарту: ${chartType.toUpperCase()}\n📈 X Axis: "${xField}"\n📉 Y Axis: "${yField}"\n\n✅ Чарт створено та збережено!\n\nAI НІКОЛИ НЕ ЗДАЄТЬСЯ! 🚀`)
   }
 
+  const handleAIAnalysisComplete = (result: any) => {
+    setAiAnalysisResult(result)
+    console.log('AI Analysis completed:', result)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
+      {/* Header */}
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                <Brain className="h-8 w-8 text-blue-600" />
+                DataViz AI Playground
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-1">
+                AI-powered data visualization with support for 20+ file formats
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 text-sm text-gray-500">
+                <Sparkles className="h-4 w-4" />
+                <span>AI Enhanced</span>
+              </div>
+              <div className="flex items-center gap-1 text-sm text-gray-500">
+                <Database className="h-4 w-4" />
+                <span>20+ Formats</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -111,19 +145,60 @@ export default function HomePage() {
             {dataProfile && (
               <ChartBuilder
                 dataProfile={dataProfile}
-                showPreview={showPreview}
-                onShowPreviewChange={setShowPreview}
                 onChartCreated={handleChartCreated}
               />
             )}
           </div>
           
-          {/* Right Column - AI Assistant */}
+          {/* Right Column - AI Assistant & Stats */}
           <div className="space-y-6">
             <AIAssistant 
               dataProfile={dataProfile} 
               onChartSuggestion={handleAIChartSuggestion}
+              onAnalysisComplete={handleAIAnalysisComplete}
             />
+            
+            {/* AI Analysis Results */}
+            {aiAnalysisResult && (
+              <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2 text-green-900 dark:text-green-100">
+                    <Zap className="h-5 w-5" />
+                    AI Analysis Results
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="text-sm">
+                    <div className="font-medium text-green-800 dark:text-green-200 mb-2">
+                      Recommended Chart: {aiAnalysisResult.chartType.toUpperCase()}
+                    </div>
+                    <div className="text-green-700 dark:text-green-300 space-y-1">
+                      <div>X Field: {aiAnalysisResult.xField || 'Not specified'}</div>
+                      <div>Y Field: {aiAnalysisResult.yField || 'Not specified'}</div>
+                      {aiAnalysisResult.colorField && (
+                        <div>Color: {aiAnalysisResult.colorField}</div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {aiAnalysisResult.insights && aiAnalysisResult.insights.length > 0 && (
+                    <div className="text-sm">
+                      <div className="font-medium text-green-800 dark:text-green-200 mb-1">
+                        Key Insights:
+                      </div>
+                      <ul className="text-green-700 dark:text-green-300 space-y-1">
+                        {aiAnalysisResult.insights.slice(0, 3).map((insight: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-green-600">•</span>
+                            {insight}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
             
             {/* Quick Stats */}
             {createdCharts.length > 0 && (
@@ -172,36 +247,46 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              🚀 Why Choose DataViz Playground?
+              🚀 Why Choose DataViz AI Playground?
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8">
               <div className="text-center">
                 <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="h-8 w-8 text-blue-600" />
+                  <Brain className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI-Powered Insights</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI-Powered Analysis</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Get intelligent chart recommendations and automatic data analysis powered by advanced AI models.
+                  Intelligent data analysis with automatic chart recommendations and statistical insights.
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Download className="h-8 w-8 text-green-600" />
+                  <Database className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Code Export</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Universal Format Support</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Your visualizations as production-ready code in Python (Plotly, Matplotlib) or R (ggplot2, Plotly).
+                  Import from CSV, TSV, Excel, JSON, XML, YAML, TOML, LOG, Parquet, NumPy, and more.
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-8 w-8 text-purple-600" />
+                  <Download className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Universal Data Support</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Code Export</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Import data from CSV, Excel, JSON, and more. Process files up to 200MB with advanced data profiling.
+                  Export visualizations as production-ready Python (Plotly, Matplotlib) or R (ggplot2, Plotly) code.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="h-8 w-8 text-orange-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advanced Charts</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  16+ chart types including histograms, heatmaps, radar charts, and more with interactive features.
                 </p>
               </div>
             </div>

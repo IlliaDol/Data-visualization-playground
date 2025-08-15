@@ -107,6 +107,113 @@ export function calculateCorrelations(data: Record<string, any>[], numericFields
   return correlations
 }
 
+// Расширенная поддержка форматов файлов
+const SUPPORTED_FORMATS = {
+  // Текстовые форматы
+  'text/csv': ['.csv'],
+  'text/tab-separated-values': ['.tsv', '.tab'],
+  'text/plain': ['.txt', '.log', '.dat'],
+  
+  // Excel форматы
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsm'],
+  
+  // JSON форматы
+  'application/json': ['.json'],
+  'application/ld+json': ['.jsonld'],
+  
+  // XML форматы
+  'application/xml': ['.xml'],
+  'text/xml': ['.xml'],
+  
+  // Сжатые форматы
+  'application/gzip': ['.gz', '.gzip'],
+  'application/x-gzip': ['.gz'],
+  'application/zip': ['.zip'],
+  'application/x-zip-compressed': ['.zip'],
+  
+  // Специальные форматы
+  'application/parquet': ['.parquet'],
+  'application/numpy': ['.npz', '.npy'],
+  'application/pickle': ['.pkl', '.pickle'],
+  'application/hdf5': ['.h5', '.hdf5'],
+  'application/feather': ['.feather'],
+  'application/arrow': ['.arrow'],
+  'application/avro': ['.avro'],
+  'application/orc': ['.orc'],
+  
+  // Логи и системные файлы
+  'text/log': ['.log'],
+  'application/log': ['.log'],
+  
+  // Другие форматы
+  'text/yaml': ['.yaml', '.yml'],
+  'text/toml': ['.toml'],
+  'application/toml': ['.toml'],
+  'text/ini': ['.ini', '.cfg', '.conf'],
+  'application/ini': ['.ini', '.cfg', '.conf']
+}
+
+export function getSupportedFormats() {
+  return SUPPORTED_FORMATS
+}
+
+export function isFileSupported(file: File): boolean {
+  const fileName = file.name.toLowerCase()
+  const fileType = file.type
+  
+  // Проверяем по MIME типу
+  if (fileType && SUPPORTED_FORMATS[fileType as keyof typeof SUPPORTED_FORMATS]) {
+    return true
+  }
+  
+  // Проверяем по расширению файла
+  for (const [mimeType, extensions] of Object.entries(SUPPORTED_FORMATS)) {
+    if (extensions.some(ext => fileName.endsWith(ext))) {
+      return true
+    }
+  }
+  
+  return false
+}
+
+export function detectFileFormat(file: File): string {
+  const fileName = file.name.toLowerCase()
+  const fileType = file.type
+  
+  // Определяем формат по расширению
+  if (fileName.endsWith('.csv')) return 'csv'
+  if (fileName.endsWith('.tsv') || fileName.endsWith('.tab')) return 'tsv'
+  if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.xlsm')) return 'excel'
+  if (fileName.endsWith('.json') || fileName.endsWith('.jsonld')) return 'json'
+  if (fileName.endsWith('.xml')) return 'xml'
+  if (fileName.endsWith('.parquet')) return 'parquet'
+  if (fileName.endsWith('.npz') || fileName.endsWith('.npy')) return 'numpy'
+  if (fileName.endsWith('.pkl') || fileName.endsWith('.pickle')) return 'pickle'
+  if (fileName.endsWith('.h5') || fileName.endsWith('.hdf5')) return 'hdf5'
+  if (fileName.endsWith('.feather')) return 'feather'
+  if (fileName.endsWith('.arrow')) return 'arrow'
+  if (fileName.endsWith('.avro')) return 'avro'
+  if (fileName.endsWith('.orc')) return 'orc'
+  if (fileName.endsWith('.log')) return 'log'
+  if (fileName.endsWith('.yaml') || fileName.endsWith('.yml')) return 'yaml'
+  if (fileName.endsWith('.toml')) return 'toml'
+  if (fileName.endsWith('.ini') || fileName.endsWith('.cfg') || fileName.endsWith('.conf')) return 'ini'
+  if (fileName.endsWith('.gz') || fileName.endsWith('.gzip')) return 'gzip'
+  if (fileName.endsWith('.zip')) return 'zip'
+  
+  // Определяем по MIME типу
+  if (fileType.includes('csv')) return 'csv'
+  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'excel'
+  if (fileType.includes('json')) return 'json'
+  if (fileType.includes('xml')) return 'xml'
+  if (fileType.includes('gzip')) return 'gzip'
+  if (fileType.includes('zip')) return 'zip'
+  
+  return 'unknown'
+}
+
 // File parsing utilities
 export async function parseCSV(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
   return new Promise((resolve, reject) => {
@@ -154,6 +261,191 @@ export async function parseCSV(file: File): Promise<{ data: Record<string, any>[
       }
     }
     reader.onerror = () => reject(new Error('Failed to read CSV file'))
+    reader.readAsText(file)
+  })
+}
+
+export async function parseTSV(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        const lines = text.split('\n').filter(line => line.trim())
+        if (lines.length === 0) {
+          reject(new Error('Empty TSV file'))
+          return
+        }
+        
+        const headers = lines[0].split('\t').map(h => h.trim())
+        const data = lines.slice(1).map(line => {
+          const values = line.split('\t').map(v => v.trim())
+          const row: Record<string, any> = {}
+          headers.forEach((header, index) => {
+            row[header] = values[index] || null
+          })
+          return row
+        })
+        
+        resolve({ data, fields: headers })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read TSV file'))
+    reader.readAsText(file)
+  })
+}
+
+export async function parseLog(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        const lines = text.split('\n').filter(line => line.trim())
+        if (lines.length === 0) {
+          reject(new Error('Empty log file'))
+          return
+        }
+        
+        // Пытаемся парсить лог как структурированный
+        const data: Record<string, any>[] = []
+        const fields = new Set<string>()
+        
+        lines.forEach((line, index) => {
+          const row: Record<string, any> = {
+            line_number: index + 1,
+            raw_line: line,
+            timestamp: null,
+            level: null,
+            message: null
+          }
+          
+          // Пытаемся извлечь timestamp
+          const timestampMatch = line.match(/(\d{4}-\d{2}-\d{2}|\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/)
+          if (timestampMatch) {
+            row.timestamp = timestampMatch[1]
+            fields.add('timestamp')
+          }
+          
+          // Пытаемся извлечь уровень логирования
+          const levelMatch = line.match(/(ERROR|WARN|INFO|DEBUG|TRACE)/i)
+          if (levelMatch) {
+            row.level = levelMatch[1].toUpperCase()
+            fields.add('level')
+          }
+          
+          // Извлекаем сообщение (все после timestamp и level)
+          const messageMatch = line.match(/(?:ERROR|WARN|INFO|DEBUG|TRACE)\s*(.+)/i)
+          if (messageMatch) {
+            row.message = messageMatch[1].trim()
+            fields.add('message')
+          } else {
+            row.message = line.trim()
+            fields.add('message')
+          }
+          
+          data.push(row)
+        })
+        
+        const fieldArray = Array.from(fields)
+        resolve({ data, fields: fieldArray })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read log file'))
+    reader.readAsText(file)
+  })
+}
+
+export async function parseYAML(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        // Простой парсинг YAML (в реальном приложении используйте js-yaml)
+        const lines = text.split('\n').filter(line => line.trim())
+        const data: Record<string, any>[] = []
+        const fields = new Set<string>()
+        
+        let currentObject: Record<string, any> = {}
+        
+        lines.forEach(line => {
+          const trimmed = line.trim()
+          if (trimmed && !trimmed.startsWith('#')) {
+            const colonIndex = trimmed.indexOf(':')
+            if (colonIndex > 0) {
+              const key = trimmed.substring(0, colonIndex).trim()
+              const value = trimmed.substring(colonIndex + 1).trim().replace(/^["']|["']$/g, '')
+              currentObject[key] = value
+              fields.add(key)
+            }
+          } else if (trimmed === '' && Object.keys(currentObject).length > 0) {
+            data.push({ ...currentObject })
+            currentObject = {}
+          }
+        })
+        
+        // Добавляем последний объект
+        if (Object.keys(currentObject).length > 0) {
+          data.push(currentObject)
+        }
+        
+        const fieldArray = Array.from(fields)
+        resolve({ data, fields: fieldArray })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read YAML file'))
+    reader.readAsText(file)
+  })
+}
+
+export async function parseTOML(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        // Простой парсинг TOML (в реальном приложении используйте @iarna/toml)
+        const lines = text.split('\n').filter(line => line.trim())
+        const data: Record<string, any>[] = []
+        const fields = new Set<string>()
+        
+        let currentObject: Record<string, any> = {}
+        
+        lines.forEach(line => {
+          const trimmed = line.trim()
+          if (trimmed && !trimmed.startsWith('#')) {
+            const equalIndex = trimmed.indexOf('=')
+            if (equalIndex > 0) {
+              const key = trimmed.substring(0, equalIndex).trim()
+              const value = trimmed.substring(equalIndex + 1).trim().replace(/^["']|["']$/g, '')
+              currentObject[key] = value
+              fields.add(key)
+            }
+          } else if (trimmed.startsWith('[') && Object.keys(currentObject).length > 0) {
+            data.push({ ...currentObject })
+            currentObject = {}
+          }
+        })
+        
+        // Добавляем последний объект
+        if (Object.keys(currentObject).length > 0) {
+          data.push(currentObject)
+        }
+        
+        const fieldArray = Array.from(fields)
+        resolve({ data, fields: fieldArray })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read TOML file'))
     reader.readAsText(file)
   })
 }
@@ -207,6 +499,117 @@ export async function parseJSON(file: File): Promise<{ data: Record<string, any>
     reader.onerror = () => reject(new Error('Failed to read JSON file'))
     reader.readAsText(file)
   })
+}
+
+export async function parseXML(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        const parser = new DOMParser()
+        const xmlDoc = parser.parseFromString(text, 'text/xml')
+        
+        const data: Record<string, any>[] = []
+        const fields = new Set<string>()
+        
+        // Пытаемся найти повторяющиеся элементы
+        const elements = xmlDoc.querySelectorAll('*')
+        const elementCounts = new Map<string, number>()
+        
+        elements.forEach(element => {
+          const tagName = element.tagName
+          elementCounts.set(tagName, (elementCounts.get(tagName) || 0) + 1)
+        })
+        
+        // Находим наиболее часто встречающийся элемент
+        let mostCommonElement = ''
+        let maxCount = 0
+        
+        elementCounts.forEach((count, tagName) => {
+          if (count > maxCount && tagName !== 'root' && tagName !== 'data') {
+            maxCount = count
+            mostCommonElement = tagName
+          }
+        })
+        
+        if (mostCommonElement) {
+          const items = xmlDoc.querySelectorAll(mostCommonElement)
+          items.forEach(item => {
+            const row: Record<string, any> = {}
+            Array.from(item.children).forEach(child => {
+              const key = child.tagName
+              const value = child.textContent || ''
+              row[key] = value
+              fields.add(key)
+            })
+            if (Object.keys(row).length > 0) {
+              data.push(row)
+            }
+          })
+        }
+        
+        const fieldArray = Array.from(fields)
+        resolve({ data, fields: fieldArray })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read XML file'))
+    reader.readAsText(file)
+  })
+}
+
+// Функция для парсинга сжатых файлов
+export async function parseCompressedFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  // В реальном приложении здесь была бы логика распаковки
+  // Для демонстрации возвращаем ошибку
+  throw new Error('Compressed file parsing not implemented in demo. Use uncompressed files.')
+}
+
+// Функция для парсинга бинарных форматов
+export async function parseBinaryFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  // В реальном приложении здесь была бы логика парсинга бинарных форматов
+  // Для демонстрации возвращаем ошибку
+  throw new Error('Binary file parsing not implemented in demo. Use text-based formats.')
+}
+
+// Универсальная функция парсинга
+export async function parseFile(file: File): Promise<{ data: Record<string, any>[], fields: string[] }> {
+  const format = detectFileFormat(file)
+  
+  switch (format) {
+    case 'csv':
+      return parseCSV(file)
+    case 'tsv':
+      return parseTSV(file)
+    case 'excel':
+      return parseExcel(file)
+    case 'json':
+      return parseJSON(file)
+    case 'xml':
+      return parseXML(file)
+    case 'log':
+      return parseLog(file)
+    case 'yaml':
+      return parseYAML(file)
+    case 'toml':
+      return parseTOML(file)
+    case 'gzip':
+    case 'zip':
+      return parseCompressedFile(file)
+    case 'parquet':
+    case 'numpy':
+    case 'pickle':
+    case 'hdf5':
+    case 'feather':
+    case 'arrow':
+    case 'avro':
+    case 'orc':
+      return parseBinaryFile(file)
+    default:
+      throw new Error(`Unsupported file format: ${format}`)
+  }
 }
 
 // Chart utilities

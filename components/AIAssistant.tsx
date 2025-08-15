@@ -25,6 +25,7 @@ import { DataProfile, ChartSpec, ChartMark } from '@/types'
 interface AIAssistantProps {
   dataProfile?: DataProfile
   onChartSuggestion?: (chartSpec: ChartSpec) => void
+  onAnalysisComplete?: (result: any) => void
 }
 
 interface Message {
@@ -212,42 +213,61 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
     
     console.log('🔍 AI аналізує поля:', dataProfile.fields.map(f => ({ name: f.name, type: f.type })))
     
-    // УЛЬТРА-АГРЕСИВНА логіка - AI ЗАВЖДИ ВИБИРАЄ ОБИДВІ ОСІ!
+    // Используем новую логику AI агента
+    const numericFields = dataProfile.fields.filter(f => {
+      const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
+      return sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
+    })
+    
+    const categoricalFields = dataProfile.fields.filter(f => {
+      const sampleValues = dataProfile.sampleData?.slice(0, 5).map(row => row[f.name]) || []
+      return !sampleValues.some(val => !isNaN(Number(val)) && val !== '' && val !== null)
+    })
+    
     let chartType = 'bar'
     let xField = ''
     let yField = ''
     
-    // ВИБИРАЄМО ПОЛЯ НЕЗАЛЕЖНО ВІД ТИПУ!
-    if (dataProfile.fields.length >= 2) {
-      // Є хоча б 2 поля - використовуємо їх
-      xField = dataProfile.fields[0].name
-      yField = dataProfile.fields[1].name
+    // Умная логика выбора полей
+    if (categoricalFields.length > 0 && numericFields.length > 0) {
+      // Есть и категориальные и числовые поля - идеально для bar chart
       chartType = 'bar'
-      console.log('🎯 Вибрав перші два поля:', { xField, yField })
-    } else if (dataProfile.fields.length === 1) {
-      // Тільки одне поле - використовуємо його для обох осей
-      xField = dataProfile.fields[0].name
-      yField = dataProfile.fields[0].name
+      xField = categoricalFields[0].name
+      yField = numericFields[0].name
+    } else if (numericFields.length >= 2) {
+      // Два или больше числовых полей - scatter plot
+      chartType = 'scatter'
+      xField = numericFields[0].name
+      yField = numericFields[1].name
+    } else if (numericFields.length === 1) {
+      // Только одно числовое поле - histogram
+      chartType = 'histogram'
+      xField = numericFields[0].name
+      yField = numericFields[0].name
+    } else if (categoricalFields.length >= 2) {
+      // Два или больше категориальных полей - pie chart для пропорций
+      chartType = 'pie'
+      xField = categoricalFields[0].name
+      yField = ''
+    } else if (categoricalFields.length === 1) {
+      // Только одно категориальное поле - bar chart с подсчетом
       chartType = 'bar'
-      console.log('🎯 Один поле - використовую для обох осей:', { xField, yField })
+      xField = categoricalFields[0].name
+      yField = ''
     } else {
-      // Немає полів - створюємо фейкові
-      xField = 'Default_X'
-      yField = 'Default_Y'
-      chartType = 'bar'
-      console.log('🎯 Немає полів - створюю фейкові:', { xField, yField })
+      // Fallback - используем первые два поля
+      if (dataProfile.fields.length >= 2) {
+        xField = dataProfile.fields[0].name
+        yField = dataProfile.fields[1].name
+      } else if (dataProfile.fields.length === 1) {
+        xField = dataProfile.fields[0].name
+        yField = dataProfile.fields[0].name
+      }
     }
     
-    // ПЕРЕВІРКА - ПОЛЯ ПОВИННІ БУТИ ВИБРАНІ!
-    if (!xField || !yField) {
-      console.error('🚨 ПОЛЯ НЕ ВИБРАНІ! Створюю екстрені поля!')
-      xField = 'Emergency_X'
-      yField = 'Emergency_Y'
-    }
+    console.log('🎯 AI вибір:', { xField, yField, chartType })
     
-    console.log('🎯 ФІНАЛЬНИЙ ВИБІР AI:', { xField, yField, chartType })
-    
-    // СТВОРЮЄМО ЧАРТ З ОБОВ'ЯЗКОВИМИ ПОЛЯМИ
+    // Создаем ChartSpec
     const chartSpec: ChartSpec = {
       id: Math.random().toString(36).substr(2, 9),
       title: `AI Пропозиція - ${dataProfile.name}`,
@@ -256,8 +276,8 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       },
       mark: chartType as ChartMark,
       encoding: {
-        x: { field: xField, type: 'nominal' },  // ЗАВЖДИ ВКАЗУЄМО X
-        y: { field: yField, type: 'quantitative' }  // ЗАВЖДИ ВКАЗУЄМО Y
+        x: xField ? { field: xField, type: 'nominal' } : undefined,
+        y: yField ? { field: yField, type: 'quantitative' } : undefined
       },
       config: {
         theme: 'light',
@@ -272,17 +292,36 @@ export function AIAssistant({ dataProfile, onChartSuggestion }: AIAssistantProps
       updatedAt: new Date()
     }
     
-    console.log('✅ AI створює чарт з ОБОВ\'ЯЗКОВИМИ полями:', chartSpec)
+    console.log('✅ AI створює чарт:', chartSpec)
     
-    // ПЕРЕВІРЯЄМО ЧАРТ ПЕРЕД ВІДПРАВКОЮ
-    if (!chartSpec.encoding.x || !chartSpec.encoding.y) {
-      console.error('🚨 ЧАРТ НЕ МАЄ ОСЕЙ! Виправляю...')
-      chartSpec.encoding.x = { field: 'Fixed_X', type: 'nominal' }
-      chartSpec.encoding.y = { field: 'Fixed_Y', type: 'quantitative' }
+    // Вызываем callback
+    onChartSuggestion?.(chartSpec)
+    
+    // Создаем результат анализа для onAnalysisComplete
+    const analysisResult = {
+      chartType,
+      xField,
+      yField,
+      confidence: 0.8,
+      reasoning: `AI выбрал ${chartType} на основе структуры данных`,
+      insights: [
+        `Найдено ${numericFields.length} числовых полей`,
+        `Найдено ${categoricalFields.length} категориальных полей`,
+        `Рекомендуется ${chartType} для лучшей визуализации`
+      ],
+      recommendations: [
+        'Проведите дополнительный анализ данных',
+        'Рассмотрите другие типы графиков',
+        'Проверьте качество данных'
+      ],
+      statisticalTests: [
+        'Описательная статистика',
+        'Корреляционный анализ',
+        'Тест на нормальность'
+      ]
     }
     
-    console.log('✅ ФІНАЛЬНИЙ ЧАРТ:', chartSpec)
-    onChartSuggestion?.(chartSpec)
+    // onAnalysisComplete?.(analysisResult) // This line was removed as per the edit hint
   }
 
   return (
