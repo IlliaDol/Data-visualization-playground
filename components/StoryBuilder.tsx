@@ -19,10 +19,13 @@ import {
   FileText,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Brain,
+  Sparkles
 } from 'lucide-react'
 import { Story, StorySlide, ChartSpec } from '@/types'
 import { ChartRenderer } from './ChartRenderer'
+import { AIStoryAssistant } from './AIStoryAssistant'
 
 interface StoryBuilderProps {
   story?: Story
@@ -44,10 +47,11 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [availableCharts, setAvailableCharts] = useState<ChartSpec[]>([])
-  const [editMode, setEditMode] = useState<'story' | 'slide' | 'preview'>('story')
+  const [editMode, setEditMode] = useState<'story' | 'slide' | 'preview' | 'ai'>('story')
+  const [currentData, setCurrentData] = useState<any[]>([])
 
   useEffect(() => {
-    // Завантажуємо доступні чарти
+    // Завантажуємо доступні чарти та дані
     if (typeof window !== 'undefined') {
       const savedCharts = localStorage.getItem('userCharts')
       if (savedCharts) {
@@ -56,6 +60,17 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
           setAvailableCharts(charts)
         } catch (error) {
           console.error('Помилка завантаження чартів:', error)
+        }
+      }
+      
+      // Завантажуємо поточні дані для AI асистента
+      const savedData = localStorage.getItem('currentDataProfile')
+      if (savedData) {
+        try {
+          const dataProfile = JSON.parse(savedData)
+          setCurrentData(dataProfile.data || [])
+        } catch (error) {
+          console.error('Помилка завантаження даних:', error)
         }
       }
     }
@@ -107,6 +122,46 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
       updatedAt: new Date()
     }
     onSave(updatedStory)
+  }
+
+  const handleAIContentAdd = (content: any) => {
+    if (content.type === 'text') {
+      // Додаємо новий слайд з AI-згенерованим текстом
+      const newSlide: StorySlide = {
+        id: crypto.randomUUID(),
+        title: content.title,
+        content: content.content,
+        chartId: undefined,
+        order: currentStory.slides.length,
+        duration: 8
+      }
+      
+      const updatedSlides = [...currentStory.slides, newSlide]
+      setCurrentStory({
+        ...currentStory,
+        slides: updatedSlides
+      })
+      setCurrentSlideIndex(updatedSlides.length - 1)
+      setEditMode('slide')
+    } else if (content.type === 'presentation') {
+      // Створюємо структуру слайдів на основі AI рекомендацій
+      const newSlides = content.slides.map((slide: any, index: number) => ({
+        id: crypto.randomUUID(),
+        title: slide.title,
+        content: slide.content,
+        chartId: undefined,
+        order: currentStory.slides.length + index,
+        duration: 6
+      }))
+      
+      const updatedSlides = [...currentStory.slides, ...newSlides]
+      setCurrentStory({
+        ...currentStory,
+        slides: updatedSlides
+      })
+      setCurrentSlideIndex(currentStory.slides.length)
+      setEditMode('slide')
+    }
   }
 
   const handlePlayPause = () => {
@@ -168,6 +223,14 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
               Перегляд
             </Button>
             
+            <Button
+              variant={editMode === 'ai' ? 'default' : 'outline'}
+              onClick={() => setEditMode('ai')}
+            >
+              <Brain className="h-4 w-4 mr-2" />
+              AI Асистент
+            </Button>
+            
             <Button onClick={handleSaveStory}>
               <Save className="h-4 w-4 mr-2" />
               Зберегти
@@ -175,8 +238,8 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Story/Slide Editor */}
+        <div className={`grid gap-6 ${editMode === 'ai' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
+          {/* Left Panel - Story/Slide Editor or AI Assistant */}
           <div className="lg:col-span-1">
             {editMode === 'story' && (
               <Card>
@@ -227,6 +290,14 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
                   </div>
                 </CardContent>
               </Card>
+            )}
+
+            {editMode === 'ai' && (
+              <AIStoryAssistant
+                onAddContent={handleAIContentAdd}
+                currentData={currentData}
+                currentCharts={availableCharts}
+              />
             )}
 
             {editMode === 'slide' && (
@@ -347,7 +418,7 @@ export function StoryBuilder({ story, onSave, onCancel }: StoryBuilderProps) {
           </div>
 
           {/* Center Panel - Preview/Playback */}
-          <div className="lg:col-span-2">
+          <div className={editMode === 'ai' ? 'lg:col-span-1' : 'lg:col-span-2'}>
             <Card className="h-[600px] flex flex-col">
               <CardHeader>
                 <div className="flex items-center justify-between">

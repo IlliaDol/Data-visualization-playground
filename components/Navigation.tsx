@@ -9,7 +9,8 @@ import {
   Github,
   Settings,
   Grid3X3,
-  BookOpen
+  BookOpen,
+  Brain
 } from 'lucide-react'
 import { LanguageToggle } from './LanguageToggle'
 import { ThemeToggle } from './ThemeToggle'
@@ -19,6 +20,7 @@ export function Navigation() {
 
   const navigationItems = [
     { href: '/', label: 'Playground', icon: BarChart3 },
+    { href: '/analysis', label: 'Analysis', icon: Brain },
     { href: '/dashboards', label: 'Dashboards', icon: Grid3X3 },
     { href: '/stories', label: 'Stories', icon: BookOpen },
     { href: '/settings', label: 'Settings', icon: Settings },
